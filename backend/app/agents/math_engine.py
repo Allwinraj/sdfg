@@ -28,12 +28,15 @@ class MathEngine:
         shape = config.get("shape") or logic.shape
         mode = config.get("mode") or logic.mode
         output = config.get("output_column") or logic.output
-        input_map = dict(config.get("input_map") or {})
-        constants = {k: _to_dec(v) for k, v in dict(config.get("constants") or {}).items()}
+        input_map = dict(config.get("input_map") or logic.input_map or {})
+        constants = {
+            k: _to_dec(v)
+            for k, v in {**dict(logic.constants or {}), **dict(config.get("constants") or {})}.items()
+        }
         empty_rule = dict(config.get("empty_rule") or {})
         precision = int(config.get("precision", 2))
         rounding = str(config.get("rounding") or "half_up")
-        group_by = list(config.get("group_by") or [])
+        group_by = list(config.get("group_by") or logic.group_by or [])
         aggregate_output = config.get("aggregate_output") or "summary"
         opening = _to_dec(config.get("opening_balance") or 0)
 

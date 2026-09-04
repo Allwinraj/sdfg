@@ -13,7 +13,7 @@ from app.engine.schema_sync import propagate_schema
 from app.models.chat import ChatMessage, ConfigPatch, ExtractedRequirement, InterviewSession, ProgressiveReveal
 from app.models.knowledge import KnowledgeDocument, SessionKnowledge
 from app.models.pipeline import Pipeline
-from app.services.formulas import compile_math_value
+from app.services.formulas import catalog_digest, compile_math_value
 from app.services.knowledge import (
     chunk_text,
     extract_facts,
@@ -1009,12 +1009,15 @@ async def _llm_turn(
         "cannot_serve_reason to a short plain-language summary of why Nexus v1 cannot finish it.\n"
         "Emit requirements with kinds match|math|decision|output|excel|pdf. "
         "For match: value.keys, mode, window_days, flags.allocation. "
-        "For math: copy the user's words into value.formula_en. Also set "
-        "value.constants for numbers they said (pct 0.02 for 2%, amount 50 for $50), "
-        "value.catalog_id when it clearly matches running_balance / min_pct_amount_tolerance / "
-        "variance_pct / variance_amount / group_sum, value.shape sequential for running balances, "
-        "value.mode hybrid when they want a flag/gate, and value.input_map from uploaded column names. "
-        "The app compiles formula_en into ast and writes it onto the Math node config. "
+        "For math: copy the user's words into value.formula_en. Pick value.catalog_id "
+        "from the formula library below — never invent AST. Fill value.constants "
+        "(pct 0.02 for 2%, amount 50 for $50 or 1000 for a $1,000 break) and "
+        "value.input_map from uploaded column names. Set value.shape sequential for "
+        "running balances, value.mode hybrid when they want a flag/gate.\n"
+        "Formula library:\n"
+        f"{catalog_digest()}\n"
+        "The app copies that catalog formula's AST onto the Math node. "
+        "Do not write ast yourself.\n"
         "For decision: value.policy in one sentence. "
         "For output: value.formats ['xlsx'] and/or ['pdf'].\n"
         "Set capabilities from THIS process only. Never insert Matcher, Math, or Decision "
