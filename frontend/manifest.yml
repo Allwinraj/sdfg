@@ -1,0 +1,11 @@
+---
+applications:
+  - name: nexus-ui
+    memory: 128M
+    disk_quota: 256M
+    instances: 1
+    timeout: 180
+    buildpacks:
+      - staticfile_buildpack
+    # UI:  https://nexus-ui.cfapps.eu10-004.hana.ondemand.com
+    # API: https://nexus-api.cfapps.eu10-004.hana.ondemand.com  (hardcoded in src/lib/api.ts)
