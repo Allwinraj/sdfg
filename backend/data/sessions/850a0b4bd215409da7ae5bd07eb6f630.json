@@ -1,0 +1,21 @@
+{
+  "id": "850a0b4bd215409da7ae5bd07eb6f630",
+  "status": "welcome",
+  "confirmed": false,
+  "messages": [
+    {
+      "id": "13f7663e23b244369f7076f1506fb978",
+      "role": "assistant",
+      "content": "Hi, I'm Nexus. I'll help you design a finance operations pipeline in conversation \u2014 no form to fill. What's your role, industry, and domain (P2P, O2C, R2R, or FP&A)? Then describe the process in your own words. Upload working data when you're ready; policy or contract files are optional.",
+      "meta": {
+        "kind": "welcome"
+      }
+    }
+  ],
+  "requirements": [],
+  "pipeline": null,
+  "uploads": [],
+  "question_count": 0,
+  "summary": null,
+  "extra": {}
+}

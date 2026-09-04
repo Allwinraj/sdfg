@@ -1,0 +1,24 @@
+{
+  "id": "5318750cfb6a43be87024b9aa7b32f12",
+  "status": "welcome",
+  "confirmed": false,
+  "messages": [
+    {
+      "id": "ec80844e31b54a2fab0c84de23923448",
+      "role": "assistant",
+      "content": "Welcome! I'm Nexus, your finance pipeline co-pilot. To get started, what is your primary role on the finance team?",
+      "meta": {
+        "kind": "welcome",
+        "upload_offer": null
+      }
+    }
+  ],
+  "requirements": [],
+  "pipeline": null,
+  "uploads": [],
+  "question_count": 0,
+  "summary": null,
+  "extra": {
+    "onboarding_step": "role"
+  }
+}
