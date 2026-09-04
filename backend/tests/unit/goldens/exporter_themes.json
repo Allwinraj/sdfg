@@ -1,0 +1,16 @@
+{
+  "executive_classic": {
+    "theme_label": "Executive Classic",
+    "header": "1B3A4B",
+    "summary": "Executive Summary",
+    "freeze": "A2"
+  },
+  "modern_slate": {
+    "theme_label": "Modern Slate",
+    "header": "1F2937"
+  },
+  "audit_clean": {
+    "theme_label": "Audit Clean",
+    "header": "14532D"
+  }
+}

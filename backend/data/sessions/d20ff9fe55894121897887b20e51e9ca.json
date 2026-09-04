@@ -1,0 +1,1977 @@
+{
+  "id": "d20ff9fe55894121897887b20e51e9ca",
+  "status": "interview",
+  "confirmed": false,
+  "messages": [
+    {
+      "id": "7170ea56a9e0429b89acbb60c0ff780f",
+      "role": "assistant",
+      "content": "Hi, I'm Nexus. I'll help you design a finance operations pipeline in conversation \u2014 no form to fill. What's your role, industry, and domain (P2P, O2C, R2R, or FP&A)? Then describe the process in your own words. Upload working data when you're ready; policy or contract files are optional.",
+      "meta": {
+        "kind": "welcome"
+      }
+    },
+    {
+      "id": "5821098cb8d9468296bbd8e95e817e1f",
+      "role": "user",
+      "content": "I'm an Accounts Payable manager at a mid-market manufacturer, working in P2P",
+      "meta": {}
+    },
+    {
+      "id": "4a20bf4cb079478985b89dcc2525a7ae",
+      "role": "assistant",
+      "content": "Welcome. To help design your Procure-to-Pay (P2P) finance ops DAG, could you please specify what systems you are using to ingest your invoices and purchase orders?",
+      "meta": {
+        "kind": "turn",
+        "ready": false,
+        "question_count": 0
+      }
+    },
+    {
+      "id": "5c3ad50705f1419f82f06069640e6589",
+      "role": "user",
+      "content": "I need to match vendor invoices against purchase orders and goods receipts,          flag any price or quantity variances, and get an exception report.",
+      "meta": {}
+    },
+    {
+      "id": "df2d8381eccc4183a6bdd2730a64155e",
+      "role": "assistant",
+      "content": "Got it. I've noted that you need to perform three-way matching (invoices, POs, and goods receipts), flag price and quantity variances, and generate an exception report. What system or format do you typically receive your invoices in (e.g., PDF, EDI, CSV)?",
+      "meta": {
+        "kind": "turn",
+        "ready": false,
+        "question_count": 0
+      }
+    },
+    {
+      "id": "ad110db7baba46468ed46d79eba2febe",
+      "role": "user",
+      "content": "Uploaded 4 data file(s): Goods_Receipts.csv, Invoices.pdf, Invoices.xlsx, PO_Export.xlsx",
+      "meta": {
+        "kind": "upload",
+        "files": [
+          "Goods_Receipts",
+          "Invoices",
+          "Invoices_2",
+          "PO_Export"
+        ]
+      }
+    },
+    {
+      "id": "aa7d503135df4132bb0bce61fecab44e",
+      "role": "assistant",
+      "content": "I have successfully analyzed your uploaded Goods Receipts, Invoices, and Purchase Orders. The data structures map out clearly across PO numbers, line items, quantities, and pricing. Should we set a specific variance tolerance threshold (e.g., exact match or within $1.00) for the price and quantity checks before flagging exceptions?\n\nWhat is the acceptable variance threshold (if any) for price and quantity matching before generating an exception?",
+      "meta": {
+        "kind": "turn",
+        "ready": false,
+        "question_count": 1
+      }
+    },
+    {
+      "id": "91fae79bf9164c6a85b7a659456c9007",
+      "role": "user",
+      "content": "Uploaded 1 knowledge file(s): AP_Procurement_Policy_2024.pdf",
+      "meta": {
+        "kind": "upload",
+        "files": [
+          "AP_Procurement_Policy_2024"
+        ]
+      }
+    },
+    {
+      "id": "54c46288a1c3401191ce2ca2d33a562f",
+      "role": "assistant",
+      "content": "I see you have uploaded Goods Receipts, Invoices, Purchase Orders, and your AP Procurement Policy. Based on your P2P setup, we have 3-way matching, variance checks for price and quantity, and policy compliance. Should we route exceptions directly to AP clerks or hold them for manager approval?\n\nShould matching exceptions be automatically routed to the assigned AP clerk from the invoice data or held for manager review?",
+      "meta": {
+        "kind": "turn",
+        "ready": false,
+        "question_count": 2
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "req_1",
+      "kind": "source",
+      "value": {
+        "type": "documents",
+        "description": "Goods_Receipts, Invoices, PO_Export, AP_Procurement_Policy_2024"
+      },
+      "source_message_id": "91fae79bf9164c6a85b7a659456c9007"
+    },
+    {
+      "id": "req_2",
+      "kind": "keys",
+      "value": {
+        "fields": [
+          "po_number",
+          "po_line_id",
+          "vendor_id",
+          "item_sku",
+          "qty_ordered",
+          "qty_received",
+          "qty_invoiced",
+          "unit_price"
+        ]
+      },
+      "source_message_id": "91fae79bf9164c6a85b7a659456c9007"
+    },
+    {
+      "id": "req_3",
+      "kind": "math_gates",
+      "value": {
+        "rules": [
+          "Price variance check between invoice and PO",
+          "Quantity variance check between invoice and goods receipt"
+        ]
+      },
+      "source_message_id": "91fae79bf9164c6a85b7a659456c9007"
+    },
+    {
+      "id": "req_4",
+      "kind": "rules",
+      "value": {
+        "policy": "AP_Procurement_Policy_2024.pdf compliance verification"
+      },
+      "source_message_id": "91fae79bf9164c6a85b7a659456c9007"
+    },
+    {
+      "id": "req_5",
+      "kind": "outputs",
+      "value": {
+        "format": "Exception Report"
+      },
+      "source_message_id": "91fae79bf9164c6a85b7a659456c9007"
+    }
+  ],
+  "pipeline": {
+    "id": "d20ff9fe55894121897887b20e51e9ca",
+    "name": "draft",
+    "version": "0.1",
+    "nodes": [
+      {
+        "id": "ingest_Goods_Receipts",
+        "agent": "ingestion",
+        "mode": "data",
+        "behavior_ref": "",
+        "label": "Goods_Receipts",
+        "config": {
+          "mode": "data",
+          "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d20ff9fe55894121897887b20e51e9ca\\Goods_Receipts.csv",
+          "file_id": "Goods_Receipts",
+          "schema": [
+            {
+              "name": "gr_number",
+              "type": "string",
+              "samples": [
+                "GR-88021",
+                "GR-88022",
+                "GR-88023",
+                "GR-88024",
+                "GR-88025"
+              ]
+            },
+            {
+              "name": "gr_date",
+              "type": "date",
+              "samples": [
+                "2024-04-14",
+                "2024-04-15",
+                "2024-04-16",
+                "2024-04-17",
+                "2024-04-18"
+              ]
+            },
+            {
+              "name": "po_number",
+              "type": "string",
+              "samples": [
+                "PO-24018",
+                "PO-24018",
+                "PO-24022",
+                "PO-24022",
+                "PO-24031"
+              ]
+            },
+            {
+              "name": "po_line_id",
+              "type": "integer",
+              "samples": [
+                "10",
+                "20",
+                "10",
+                "20",
+                "10"
+              ]
+            },
+            {
+              "name": "vendor_name",
+              "type": "string",
+              "samples": [
+                "Dell Computers",
+                "Dell Computers",
+                "SKF USA Inc",
+                "SKF USA Inc",
+                "Bosch Rexroth Corp"
+              ]
+            },
+            {
+              "name": "item_sku",
+              "type": "string",
+              "samples": [
+                "SRV-7400",
+                "WAR-3YR",
+                "6205-2RS",
+                "6310-2Z",
+                "4WE6"
+              ]
+            },
+            {
+              "name": "qty_received",
+              "type": "integer",
+              "samples": [
+                "4",
+                "4",
+                "180",
+                "80",
+                "12"
+              ]
+            },
+            {
+              "name": "uom",
+              "type": "string",
+              "samples": [
+                "EA",
+                "EA",
+                "EA",
+                "EA",
+                "EA"
+              ]
+            },
+            {
+              "name": "unit_price",
+              "type": "decimal",
+              "samples": [
+                "4820.00",
+                "610.00",
+                "18.40",
+                "42.15",
+                "318.50"
+              ]
+            },
+            {
+              "name": "received_amount",
+              "type": "decimal",
+              "samples": [
+                "19280.00",
+                "2440.00",
+                "3312.00",
+                "3372.00",
+                "3822.00"
+              ]
+            },
+            {
+              "name": "warehouse",
+              "type": "string",
+              "samples": [
+                "Plant-OH-WH1",
+                "Plant-OH-WH1",
+                "Plant-IN-WH1",
+                "Plant-IN-WH1",
+                "Plant-OH-WH1"
+              ]
+            },
+            {
+              "name": "packing_slip",
+              "type": "string",
+              "samples": [
+                "PS-88021",
+                "PS-88022",
+                "PS-88023",
+                "PS-88024",
+                "PS-88025"
+              ]
+            },
+            {
+              "name": "receiver",
+              "type": "string",
+              "samples": [
+                "K. Brooks",
+                "P. Singh",
+                "L. Nguyen",
+                "K. Brooks",
+                "P. Singh"
+              ]
+            },
+            {
+              "name": "inspection_status",
+              "type": "string",
+              "samples": [
+                "Accepted",
+                "Accepted",
+                "Accepted",
+                "Accepted",
+                "Accepted"
+              ]
+            }
+          ]
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "default",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "ingest_Invoices",
+        "agent": "ingestion",
+        "mode": "data",
+        "behavior_ref": "",
+        "label": "Invoices",
+        "config": {
+          "mode": "data",
+          "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d20ff9fe55894121897887b20e51e9ca\\Invoices.pdf",
+          "file_id": "Invoices",
+          "schema": [
+            {
+              "name": "invoice_number",
+              "type": "string",
+              "samples": [
+                "INV-24-14001",
+                "INV-24-14002",
+                "INV-24-14003",
+                "INV-24-14004",
+                "INV-24-14005"
+              ]
+            },
+            {
+              "name": "invoice_date",
+              "type": "date",
+              "samples": [
+                "2024-04-19",
+                "2024-04-20",
+                "2024-04-21",
+                "2024-04-22",
+                "2024-04-23"
+              ]
+            },
+            {
+              "name": "po_number",
+              "type": "string",
+              "samples": [
+                "PO-24018",
+                "PO-24018",
+                "PO-24022",
+                "PO-24022",
+                "PO-24031"
+              ]
+            },
+            {
+              "name": "po_line_id",
+              "type": "integer",
+              "samples": [
+                "10",
+                "20",
+                "10",
+                "20",
+                "10"
+              ]
+            },
+            {
+              "name": "vendor_name",
+              "type": "string",
+              "samples": [
+                "Dell Computers",
+                "Dell Computers",
+                "SKF United States",
+                "SKF United States",
+                "Robert Bosch Rexroth"
+              ]
+            },
+            {
+              "name": "vendor_tax_id",
+              "type": "string",
+              "samples": [
+                "US12-338821",
+                "US12-338821",
+                "US22-910044",
+                "US22-910044",
+                "US18-441102"
+              ]
+            },
+            {
+              "name": "item_sku",
+              "type": "string",
+              "samples": [
+                "SRV-7400",
+                "WAR-3YR",
+                "6205-2RS",
+                "6310-2Z",
+                "4WE6"
+              ]
+            },
+            {
+              "name": "qty_invoiced",
+              "type": "integer",
+              "samples": [
+                "4",
+                "4",
+                "240",
+                "80",
+                "12"
+              ]
+            },
+            {
+              "name": "uom",
+              "type": "string",
+              "samples": [
+                "EA",
+                "EA",
+                "EA",
+                "EA",
+                "EA"
+              ]
+            },
+            {
+              "name": "unit_price",
+              "type": "decimal",
+              "samples": [
+                "4820.00",
+                "610.00",
+                "18.40",
+                "42.15",
+                "318.50"
+              ]
+            },
+            {
+              "name": "invoice_amount",
+              "type": "decimal",
+              "samples": [
+                "19280.02",
+                "2440.00",
+                "4416.00",
+                "3372.00",
+                "3822.00"
+              ]
+            },
+            {
+              "name": "tax_amount",
+              "type": "decimal",
+              "samples": [
+                "0.00",
+                "0.00",
+                "0.00",
+                "0.00",
+                "0.00"
+              ]
+            },
+            {
+              "name": "total_amount",
+              "type": "decimal",
+              "samples": [
+                "19280.02",
+                "2440.00",
+                "4416.00",
+                "3372.00",
+                "3822.00"
+              ]
+            },
+            {
+              "name": "currency",
+              "type": "string",
+              "samples": [
+                "USD",
+                "USD",
+                "USD",
+                "USD",
+                "USD"
+              ]
+            },
+            {
+              "name": "payment_term",
+              "type": "string",
+              "samples": [
+                "Net 45",
+                "Net 45",
+                "Net 30",
+                "Net 30",
+                "Net 30"
+              ]
+            }
+          ]
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "default",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "ingest_Invoices_2",
+        "agent": "ingestion",
+        "mode": "data",
+        "behavior_ref": "",
+        "label": "Invoices",
+        "config": {
+          "mode": "data",
+          "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d20ff9fe55894121897887b20e51e9ca\\Invoices_2.xlsx",
+          "file_id": "Invoices_2",
+          "schema": [
+            {
+              "name": "invoice_number",
+              "type": "string",
+              "samples": [
+                "INV-24-14001",
+                "INV-24-14002",
+                "INV-24-14003",
+                "INV-24-14004",
+                "INV-24-14005"
+              ]
+            },
+            {
+              "name": "invoice_date",
+              "type": "date",
+              "samples": [
+                "2024-04-19",
+                "2024-04-20",
+                "2024-04-21",
+                "2024-04-22",
+                "2024-04-23"
+              ]
+            },
+            {
+              "name": "po_number",
+              "type": "string",
+              "samples": [
+                "PO-24018",
+                "PO-24018",
+                "PO-24022",
+                "PO-24022",
+                "PO-24031"
+              ]
+            },
+            {
+              "name": "po_line_id",
+              "type": "integer",
+              "samples": [
+                "10",
+                "20",
+                "10",
+                "20",
+                "10"
+              ]
+            },
+            {
+              "name": "vendor_name",
+              "type": "string",
+              "samples": [
+                "Dell Computers",
+                "Dell Computers",
+                "SKF United States",
+                "SKF United States",
+                "Robert Bosch Rexroth"
+              ]
+            },
+            {
+              "name": "vendor_tax_id",
+              "type": "string",
+              "samples": [
+                "US12-338821",
+                "US12-338821",
+                "US22-910044",
+                "US22-910044",
+                "US18-441102"
+              ]
+            },
+            {
+              "name": "item_sku",
+              "type": "string",
+              "samples": [
+                "SRV-7400",
+                "WAR-3YR",
+                "6205-2RS",
+                "6310-2Z",
+                "4WE6"
+              ]
+            },
+            {
+              "name": "qty_invoiced",
+              "type": "integer",
+              "samples": [
+                4,
+                4,
+                240,
+                80,
+                12
+              ]
+            },
+            {
+              "name": "uom",
+              "type": "string",
+              "samples": [
+                "EA",
+                "EA",
+                "EA",
+                "EA",
+                "EA"
+              ]
+            },
+            {
+              "name": "unit_price",
+              "type": "decimal",
+              "samples": [
+                4820,
+                610,
+                "18.4",
+                "42.15",
+                "318.5"
+              ]
+            },
+            {
+              "name": "invoice_amount",
+              "type": "decimal",
+              "samples": [
+                "19280.02",
+                2440,
+                4416,
+                3372,
+                3822
+              ]
+            },
+            {
+              "name": "tax_amount",
+              "type": "integer",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "name": "total_amount",
+              "type": "decimal",
+              "samples": [
+                "19280.02",
+                2440,
+                4416,
+                3372,
+                3822
+              ]
+            },
+            {
+              "name": "currency",
+              "type": "string",
+              "samples": [
+                "USD",
+                "USD",
+                "USD",
+                "USD",
+                "USD"
+              ]
+            },
+            {
+              "name": "payment_terms",
+              "type": "string",
+              "samples": [
+                "Net 45",
+                "Net 45",
+                "Net 30",
+                "Net 30",
+                "Net 30"
+              ]
+            },
+            {
+              "name": "due_date",
+              "type": "date",
+              "samples": [
+                "2024-05-19",
+                "2024-05-20",
+                "2024-05-21",
+                "2024-05-22",
+                "2024-05-23"
+              ]
+            },
+            {
+              "name": "ap_clerk",
+              "type": "string",
+              "samples": [
+                "R. Alvarez",
+                "T. Berg",
+                "H. Cole",
+                "R. Alvarez",
+                "T. Berg"
+              ]
+            }
+          ]
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "default",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "ingest_PO_Export",
+        "agent": "ingestion",
+        "mode": "data",
+        "behavior_ref": "",
+        "label": "PO_Export",
+        "config": {
+          "mode": "data",
+          "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d20ff9fe55894121897887b20e51e9ca\\PO_Export.xlsx",
+          "file_id": "PO_Export",
+          "schema": [
+            {
+              "name": "po_number",
+              "type": "string",
+              "samples": [
+                "PO-24018",
+                "PO-24018",
+                "PO-24022",
+                "PO-24022",
+                "PO-24031"
+              ]
+            },
+            {
+              "name": "po_line_id",
+              "type": "integer",
+              "samples": [
+                "10",
+                "20",
+                "10",
+                "20",
+                "10"
+              ]
+            },
+            {
+              "name": "vendor_id",
+              "type": "string",
+              "samples": [
+                "V-1001",
+                "V-1001",
+                "V-1044",
+                "V-1044",
+                "V-1102"
+              ]
+            },
+            {
+              "name": "vendor_name",
+              "type": "string",
+              "samples": [
+                "Dell Inc",
+                "Dell Inc",
+                "SKF USA Inc",
+                "SKF USA Inc",
+                "Bosch Rexroth Corp"
+              ]
+            },
+            {
+              "name": "vendor_tier",
+              "type": "string",
+              "samples": [
+                "Tier-1",
+                "Tier-1",
+                "Tier-1",
+                "Tier-1",
+                "Tier-2"
+              ]
+            },
+            {
+              "name": "item_sku",
+              "type": "string",
+              "samples": [
+                "SRV-7400",
+                "WAR-3YR",
+                "6205-2RS",
+                "6310-2Z",
+                "4WE6"
+              ]
+            },
+            {
+              "name": "item_description",
+              "type": "string",
+              "samples": [
+                "PowerEdge R760 server",
+                "ProSupport 3-year",
+                "Deep groove ball bearing",
+                "Shielded bearing 50mm",
+                "Directional valve CETOP 3"
+              ]
+            },
+            {
+              "name": "qty_ordered",
+              "type": "integer",
+              "samples": [
+                4,
+                4,
+                240,
+                80,
+                12
+              ]
+            },
+            {
+              "name": "uom",
+              "type": "string",
+              "samples": [
+                "EA",
+                "EA",
+                "EA",
+                "EA",
+                "EA"
+              ]
+            },
+            {
+              "name": "unit_price",
+              "type": "decimal",
+              "samples": [
+                4820,
+                610,
+                "18.4",
+                "42.15",
+                "318.5"
+              ]
+            },
+            {
+              "name": "line_amount",
+              "type": "decimal",
+              "samples": [
+                19280,
+                2440,
+                4416,
+                3372,
+                3822
+              ]
+            },
+            {
+              "name": "currency",
+              "type": "string",
+              "samples": [
+                "USD",
+                "USD",
+                "USD",
+                "USD",
+                "USD"
+              ]
+            },
+            {
+              "name": "po_date",
+              "type": "date",
+              "samples": [
+                "2024-04-08",
+                "2024-04-09",
+                "2024-04-10",
+                "2024-04-11",
+                "2024-04-12"
+              ]
+            },
+            {
+              "name": "buyer",
+              "type": "string",
+              "samples": [
+                "J. Patel",
+                "M. Chen",
+                "A. Rossi",
+                "S. Okonkwo",
+                "J. Patel"
+              ]
+            },
+            {
+              "name": "plant",
+              "type": "string",
+              "samples": [
+                "Plant-OH",
+                "Plant-OH",
+                "Plant-IN",
+                "Plant-IN",
+                "Plant-OH"
+              ]
+            },
+            {
+              "name": "gl_account",
+              "type": "string",
+              "samples": [
+                "2110-6400",
+                "2110-6400",
+                "2110-6400",
+                "2110-6400",
+                "2110-6400"
+              ]
+            },
+            {
+              "name": "cost_center",
+              "type": "string",
+              "samples": [
+                "CC-OPS-14",
+                "CC-OPS-14",
+                "CC-OPS-14",
+                "CC-OPS-14",
+                "CC-OPS-14"
+              ]
+            },
+            {
+              "name": "payment_terms",
+              "type": "string",
+              "samples": [
+                "Net 45",
+                "Net 45",
+                "Net 30",
+                "Net 30",
+                "Net 30"
+              ]
+            },
+            {
+              "name": "incoterms",
+              "type": "string",
+              "samples": [
+                "DAP",
+                "DAP",
+                "DAP",
+                "DAP",
+                "DAP"
+              ]
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "samples": [
+                "Open",
+                "Open",
+                "Open",
+                "Open",
+                "Open"
+              ]
+            }
+          ]
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "default",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "matcher",
+        "agent": "matcher",
+        "mode": "structural",
+        "behavior_ref": "",
+        "label": "Matcher",
+        "config": {
+          "mode": "structural",
+          "keys": [
+            "po_number",
+            "po_line_id",
+            "vendor_id",
+            "item_sku",
+            "qty_ordered",
+            "qty_received",
+            "qty_invoiced",
+            "unit_price"
+          ],
+          "flags": {},
+          "window_days": null
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "matched",
+            "direction": "out"
+          },
+          {
+            "name": "residuals",
+            "direction": "out"
+          },
+          {
+            "name": "exceptions",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "math",
+        "agent": "math",
+        "mode": "calculation",
+        "behavior_ref": "",
+        "label": "Math",
+        "config": {
+          "mode": "calculation",
+          "shape": "per_row",
+          "output_column": "result"
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "default",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "decision",
+        "agent": "decision",
+        "mode": "approval",
+        "behavior_ref": "",
+        "label": "Decision",
+        "config": {
+          "mode": "approval",
+          "authority": "autonomous",
+          "confidence_threshold": 0.85,
+          "policy": ""
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "approved",
+            "direction": "out"
+          },
+          {
+            "name": "flagged",
+            "direction": "out"
+          },
+          {
+            "name": "escalated",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "output",
+        "agent": "output",
+        "mode": "both",
+        "behavior_ref": "",
+        "label": "Output",
+        "config": {
+          "formats": [
+            "Exception Report"
+          ],
+          "theme": "executive_classic",
+          "title": "Nexus Report"
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "default",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "ingest_knowledge_AP_Procurement_Policy_2024",
+        "agent": "ingestion",
+        "mode": "knowledge",
+        "behavior_ref": "",
+        "label": "AP_Procurement_Policy_2024",
+        "config": {
+          "mode": "knowledge",
+          "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d20ff9fe55894121897887b20e51e9ca\\AP_Procurement_Policy_2024.pdf",
+          "file_id": "AP_Procurement_Policy_2024",
+          "session_id": "d20ff9fe55894121897887b20e51e9ca"
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "default",
+            "direction": "out"
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "e_ingest_Goods_Receipts_default_matcher",
+        "source": "ingest_Goods_Receipts",
+        "source_port": "default",
+        "target": "matcher",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_ingest_Invoices_default_matcher",
+        "source": "ingest_Invoices",
+        "source_port": "default",
+        "target": "matcher",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_ingest_Invoices_2_default_matcher",
+        "source": "ingest_Invoices_2",
+        "source_port": "default",
+        "target": "matcher",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_ingest_PO_Export_default_matcher",
+        "source": "ingest_PO_Export",
+        "source_port": "default",
+        "target": "matcher",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_matcher_matched_math",
+        "source": "matcher",
+        "source_port": "matched",
+        "target": "math",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_math_default_decision",
+        "source": "math",
+        "source_port": "default",
+        "target": "decision",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_decision_approved_output",
+        "source": "decision",
+        "source_port": "approved",
+        "target": "output",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_ingest_knowledge_AP_Procurement_Policy_2024_default_decision",
+        "source": "ingest_knowledge_AP_Procurement_Policy_2024",
+        "source_port": "default",
+        "target": "decision",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      }
+    ]
+  },
+  "uploads": [
+    {
+      "kind": "data",
+      "file_id": "Goods_Receipts",
+      "name": "Goods_Receipts.csv",
+      "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d20ff9fe55894121897887b20e51e9ca\\Goods_Receipts.csv",
+      "label": "Goods_Receipts",
+      "schema": [
+        {
+          "name": "gr_number",
+          "type": "string",
+          "samples": [
+            "GR-88021",
+            "GR-88022",
+            "GR-88023",
+            "GR-88024",
+            "GR-88025"
+          ]
+        },
+        {
+          "name": "gr_date",
+          "type": "date",
+          "samples": [
+            "2024-04-14",
+            "2024-04-15",
+            "2024-04-16",
+            "2024-04-17",
+            "2024-04-18"
+          ]
+        },
+        {
+          "name": "po_number",
+          "type": "string",
+          "samples": [
+            "PO-24018",
+            "PO-24018",
+            "PO-24022",
+            "PO-24022",
+            "PO-24031"
+          ]
+        },
+        {
+          "name": "po_line_id",
+          "type": "integer",
+          "samples": [
+            "10",
+            "20",
+            "10",
+            "20",
+            "10"
+          ]
+        },
+        {
+          "name": "vendor_name",
+          "type": "string",
+          "samples": [
+            "Dell Computers",
+            "Dell Computers",
+            "SKF USA Inc",
+            "SKF USA Inc",
+            "Bosch Rexroth Corp"
+          ]
+        },
+        {
+          "name": "item_sku",
+          "type": "string",
+          "samples": [
+            "SRV-7400",
+            "WAR-3YR",
+            "6205-2RS",
+            "6310-2Z",
+            "4WE6"
+          ]
+        },
+        {
+          "name": "qty_received",
+          "type": "integer",
+          "samples": [
+            "4",
+            "4",
+            "180",
+            "80",
+            "12"
+          ]
+        },
+        {
+          "name": "uom",
+          "type": "string",
+          "samples": [
+            "EA",
+            "EA",
+            "EA",
+            "EA",
+            "EA"
+          ]
+        },
+        {
+          "name": "unit_price",
+          "type": "decimal",
+          "samples": [
+            "4820.00",
+            "610.00",
+            "18.40",
+            "42.15",
+            "318.50"
+          ]
+        },
+        {
+          "name": "received_amount",
+          "type": "decimal",
+          "samples": [
+            "19280.00",
+            "2440.00",
+            "3312.00",
+            "3372.00",
+            "3822.00"
+          ]
+        },
+        {
+          "name": "warehouse",
+          "type": "string",
+          "samples": [
+            "Plant-OH-WH1",
+            "Plant-OH-WH1",
+            "Plant-IN-WH1",
+            "Plant-IN-WH1",
+            "Plant-OH-WH1"
+          ]
+        },
+        {
+          "name": "packing_slip",
+          "type": "string",
+          "samples": [
+            "PS-88021",
+            "PS-88022",
+            "PS-88023",
+            "PS-88024",
+            "PS-88025"
+          ]
+        },
+        {
+          "name": "receiver",
+          "type": "string",
+          "samples": [
+            "K. Brooks",
+            "P. Singh",
+            "L. Nguyen",
+            "K. Brooks",
+            "P. Singh"
+          ]
+        },
+        {
+          "name": "inspection_status",
+          "type": "string",
+          "samples": [
+            "Accepted",
+            "Accepted",
+            "Accepted",
+            "Accepted",
+            "Accepted"
+          ]
+        }
+      ],
+      "sheet": null,
+      "row_count": 36
+    },
+    {
+      "kind": "data",
+      "file_id": "Invoices",
+      "name": "Invoices.pdf",
+      "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d20ff9fe55894121897887b20e51e9ca\\Invoices.pdf",
+      "label": "Invoices",
+      "schema": [
+        {
+          "name": "invoice_number",
+          "type": "string",
+          "samples": [
+            "INV-24-14001",
+            "INV-24-14002",
+            "INV-24-14003",
+            "INV-24-14004",
+            "INV-24-14005"
+          ]
+        },
+        {
+          "name": "invoice_date",
+          "type": "date",
+          "samples": [
+            "2024-04-19",
+            "2024-04-20",
+            "2024-04-21",
+            "2024-04-22",
+            "2024-04-23"
+          ]
+        },
+        {
+          "name": "po_number",
+          "type": "string",
+          "samples": [
+            "PO-24018",
+            "PO-24018",
+            "PO-24022",
+            "PO-24022",
+            "PO-24031"
+          ]
+        },
+        {
+          "name": "po_line_id",
+          "type": "integer",
+          "samples": [
+            "10",
+            "20",
+            "10",
+            "20",
+            "10"
+          ]
+        },
+        {
+          "name": "vendor_name",
+          "type": "string",
+          "samples": [
+            "Dell Computers",
+            "Dell Computers",
+            "SKF United States",
+            "SKF United States",
+            "Robert Bosch Rexroth"
+          ]
+        },
+        {
+          "name": "vendor_tax_id",
+          "type": "string",
+          "samples": [
+            "US12-338821",
+            "US12-338821",
+            "US22-910044",
+            "US22-910044",
+            "US18-441102"
+          ]
+        },
+        {
+          "name": "item_sku",
+          "type": "string",
+          "samples": [
+            "SRV-7400",
+            "WAR-3YR",
+            "6205-2RS",
+            "6310-2Z",
+            "4WE6"
+          ]
+        },
+        {
+          "name": "qty_invoiced",
+          "type": "integer",
+          "samples": [
+            "4",
+            "4",
+            "240",
+            "80",
+            "12"
+          ]
+        },
+        {
+          "name": "uom",
+          "type": "string",
+          "samples": [
+            "EA",
+            "EA",
+            "EA",
+            "EA",
+            "EA"
+          ]
+        },
+        {
+          "name": "unit_price",
+          "type": "decimal",
+          "samples": [
+            "4820.00",
+            "610.00",
+            "18.40",
+            "42.15",
+            "318.50"
+          ]
+        },
+        {
+          "name": "invoice_amount",
+          "type": "decimal",
+          "samples": [
+            "19280.02",
+            "2440.00",
+            "4416.00",
+            "3372.00",
+            "3822.00"
+          ]
+        },
+        {
+          "name": "tax_amount",
+          "type": "decimal",
+          "samples": [
+            "0.00",
+            "0.00",
+            "0.00",
+            "0.00",
+            "0.00"
+          ]
+        },
+        {
+          "name": "total_amount",
+          "type": "decimal",
+          "samples": [
+            "19280.02",
+            "2440.00",
+            "4416.00",
+            "3372.00",
+            "3822.00"
+          ]
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "samples": [
+            "USD",
+            "USD",
+            "USD",
+            "USD",
+            "USD"
+          ]
+        },
+        {
+          "name": "payment_term",
+          "type": "string",
+          "samples": [
+            "Net 45",
+            "Net 45",
+            "Net 30",
+            "Net 30",
+            "Net 30"
+          ]
+        }
+      ],
+      "sheet": null,
+      "row_count": 38
+    },
+    {
+      "kind": "data",
+      "file_id": "Invoices_2",
+      "name": "Invoices.xlsx",
+      "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d20ff9fe55894121897887b20e51e9ca\\Invoices_2.xlsx",
+      "label": "Invoices",
+      "schema": [
+        {
+          "name": "invoice_number",
+          "type": "string",
+          "samples": [
+            "INV-24-14001",
+            "INV-24-14002",
+            "INV-24-14003",
+            "INV-24-14004",
+            "INV-24-14005"
+          ]
+        },
+        {
+          "name": "invoice_date",
+          "type": "date",
+          "samples": [
+            "2024-04-19",
+            "2024-04-20",
+            "2024-04-21",
+            "2024-04-22",
+            "2024-04-23"
+          ]
+        },
+        {
+          "name": "po_number",
+          "type": "string",
+          "samples": [
+            "PO-24018",
+            "PO-24018",
+            "PO-24022",
+            "PO-24022",
+            "PO-24031"
+          ]
+        },
+        {
+          "name": "po_line_id",
+          "type": "integer",
+          "samples": [
+            "10",
+            "20",
+            "10",
+            "20",
+            "10"
+          ]
+        },
+        {
+          "name": "vendor_name",
+          "type": "string",
+          "samples": [
+            "Dell Computers",
+            "Dell Computers",
+            "SKF United States",
+            "SKF United States",
+            "Robert Bosch Rexroth"
+          ]
+        },
+        {
+          "name": "vendor_tax_id",
+          "type": "string",
+          "samples": [
+            "US12-338821",
+            "US12-338821",
+            "US22-910044",
+            "US22-910044",
+            "US18-441102"
+          ]
+        },
+        {
+          "name": "item_sku",
+          "type": "string",
+          "samples": [
+            "SRV-7400",
+            "WAR-3YR",
+            "6205-2RS",
+            "6310-2Z",
+            "4WE6"
+          ]
+        },
+        {
+          "name": "qty_invoiced",
+          "type": "integer",
+          "samples": [
+            4,
+            4,
+            240,
+            80,
+            12
+          ]
+        },
+        {
+          "name": "uom",
+          "type": "string",
+          "samples": [
+            "EA",
+            "EA",
+            "EA",
+            "EA",
+            "EA"
+          ]
+        },
+        {
+          "name": "unit_price",
+          "type": "decimal",
+          "samples": [
+            4820,
+            610,
+            "18.4",
+            "42.15",
+            "318.5"
+          ]
+        },
+        {
+          "name": "invoice_amount",
+          "type": "decimal",
+          "samples": [
+            "19280.02",
+            2440,
+            4416,
+            3372,
+            3822
+          ]
+        },
+        {
+          "name": "tax_amount",
+          "type": "integer",
+          "samples": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "total_amount",
+          "type": "decimal",
+          "samples": [
+            "19280.02",
+            2440,
+            4416,
+            3372,
+            3822
+          ]
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "samples": [
+            "USD",
+            "USD",
+            "USD",
+            "USD",
+            "USD"
+          ]
+        },
+        {
+          "name": "payment_terms",
+          "type": "string",
+          "samples": [
+            "Net 45",
+            "Net 45",
+            "Net 30",
+            "Net 30",
+            "Net 30"
+          ]
+        },
+        {
+          "name": "due_date",
+          "type": "date",
+          "samples": [
+            "2024-05-19",
+            "2024-05-20",
+            "2024-05-21",
+            "2024-05-22",
+            "2024-05-23"
+          ]
+        },
+        {
+          "name": "ap_clerk",
+          "type": "string",
+          "samples": [
+            "R. Alvarez",
+            "T. Berg",
+            "H. Cole",
+            "R. Alvarez",
+            "T. Berg"
+          ]
+        }
+      ],
+      "sheet": "Invoices",
+      "row_count": 38
+    },
+    {
+      "kind": "data",
+      "file_id": "PO_Export",
+      "name": "PO_Export.xlsx",
+      "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d20ff9fe55894121897887b20e51e9ca\\PO_Export.xlsx",
+      "label": "PO_Export",
+      "schema": [
+        {
+          "name": "po_number",
+          "type": "string",
+          "samples": [
+            "PO-24018",
+            "PO-24018",
+            "PO-24022",
+            "PO-24022",
+            "PO-24031"
+          ]
+        },
+        {
+          "name": "po_line_id",
+          "type": "integer",
+          "samples": [
+            "10",
+            "20",
+            "10",
+            "20",
+            "10"
+          ]
+        },
+        {
+          "name": "vendor_id",
+          "type": "string",
+          "samples": [
+            "V-1001",
+            "V-1001",
+            "V-1044",
+            "V-1044",
+            "V-1102"
+          ]
+        },
+        {
+          "name": "vendor_name",
+          "type": "string",
+          "samples": [
+            "Dell Inc",
+            "Dell Inc",
+            "SKF USA Inc",
+            "SKF USA Inc",
+            "Bosch Rexroth Corp"
+          ]
+        },
+        {
+          "name": "vendor_tier",
+          "type": "string",
+          "samples": [
+            "Tier-1",
+            "Tier-1",
+            "Tier-1",
+            "Tier-1",
+            "Tier-2"
+          ]
+        },
+        {
+          "name": "item_sku",
+          "type": "string",
+          "samples": [
+            "SRV-7400",
+            "WAR-3YR",
+            "6205-2RS",
+            "6310-2Z",
+            "4WE6"
+          ]
+        },
+        {
+          "name": "item_description",
+          "type": "string",
+          "samples": [
+            "PowerEdge R760 server",
+            "ProSupport 3-year",
+            "Deep groove ball bearing",
+            "Shielded bearing 50mm",
+            "Directional valve CETOP 3"
+          ]
+        },
+        {
+          "name": "qty_ordered",
+          "type": "integer",
+          "samples": [
+            4,
+            4,
+            240,
+            80,
+            12
+          ]
+        },
+        {
+          "name": "uom",
+          "type": "string",
+          "samples": [
+            "EA",
+            "EA",
+            "EA",
+            "EA",
+            "EA"
+          ]
+        },
+        {
+          "name": "unit_price",
+          "type": "decimal",
+          "samples": [
+            4820,
+            610,
+            "18.4",
+            "42.15",
+            "318.5"
+          ]
+        },
+        {
+          "name": "line_amount",
+          "type": "decimal",
+          "samples": [
+            19280,
+            2440,
+            4416,
+            3372,
+            3822
+          ]
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "samples": [
+            "USD",
+            "USD",
+            "USD",
+            "USD",
+            "USD"
+          ]
+        },
+        {
+          "name": "po_date",
+          "type": "date",
+          "samples": [
+            "2024-04-08",
+            "2024-04-09",
+            "2024-04-10",
+            "2024-04-11",
+            "2024-04-12"
+          ]
+        },
+        {
+          "name": "buyer",
+          "type": "string",
+          "samples": [
+            "J. Patel",
+            "M. Chen",
+            "A. Rossi",
+            "S. Okonkwo",
+            "J. Patel"
+          ]
+        },
+        {
+          "name": "plant",
+          "type": "string",
+          "samples": [
+            "Plant-OH",
+            "Plant-OH",
+            "Plant-IN",
+            "Plant-IN",
+            "Plant-OH"
+          ]
+        },
+        {
+          "name": "gl_account",
+          "type": "string",
+          "samples": [
+            "2110-6400",
+            "2110-6400",
+            "2110-6400",
+            "2110-6400",
+            "2110-6400"
+          ]
+        },
+        {
+          "name": "cost_center",
+          "type": "string",
+          "samples": [
+            "CC-OPS-14",
+            "CC-OPS-14",
+            "CC-OPS-14",
+            "CC-OPS-14",
+            "CC-OPS-14"
+          ]
+        },
+        {
+          "name": "payment_terms",
+          "type": "string",
+          "samples": [
+            "Net 45",
+            "Net 45",
+            "Net 30",
+            "Net 30",
+            "Net 30"
+          ]
+        },
+        {
+          "name": "incoterms",
+          "type": "string",
+          "samples": [
+            "DAP",
+            "DAP",
+            "DAP",
+            "DAP",
+            "DAP"
+          ]
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "samples": [
+            "Open",
+            "Open",
+            "Open",
+            "Open",
+            "Open"
+          ]
+        }
+      ],
+      "sheet": "PO_Export",
+      "row_count": 38
+    },
+    {
+      "kind": "knowledge",
+      "file_id": "AP_Procurement_Policy_2024",
+      "name": "AP_Procurement_Policy_2024.pdf",
+      "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d20ff9fe55894121897887b20e51e9ca\\AP_Procurement_Policy_2024.pdf",
+      "label": "AP_Procurement_Policy_2024",
+      "chunk_ids": [
+        "AP_Procurement_Policy_2024-a6db62aa27",
+        "AP_Procurement_Policy_2024-710a5adad8",
+        "AP_Procurement_Policy_2024-c5713792ba",
+        "AP_Procurement_Policy_2024-857f358270",
+        "AP_Procurement_Policy_2024-214b31acec",
+        "AP_Procurement_Policy_2024-f8d4f9accf"
+      ],
+      "fact_count": 7
+    }
+  ],
+  "question_count": 2,
+  "summary": "P2P 3-way matching and policy verification pipeline using Goods Receipts, Invoices, and PO exports.",
+  "extra": {
+    "description": "I'm an Accounts Payable manager at a mid-market manufacturer, working in P2P",
+    "capabilities": {
+      "matcher": true,
+      "math": true,
+      "decision": true,
+      "output": true,
+      "matcher_stages": 1,
+      "math_stages": 1,
+      "keys": [
+        "po_number",
+        "po_line_id",
+        "vendor_id",
+        "item_sku",
+        "qty_ordered",
+        "qty_received",
+        "qty_invoiced",
+        "unit_price"
+      ],
+      "output_formats": [
+        "Exception Report"
+      ]
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "f03ad43ef9df4dcb87b048ccd4d84483",
+  "status": "welcome",
+  "confirmed": false,
+  "messages": [
+    {
+      "id": "6a154d48a33e4c8ea9c2d0739803b376",
+      "role": "assistant",
+      "content": "Welcome to Nexus! I'm here to help you build your finance automation pipeline. To get started, what is your current role?",
+      "meta": {
+        "kind": "welcome",
+        "upload_offer": null
+      }
+    }
+  ],
+  "requirements": [],
+  "pipeline": null,
+  "uploads": [],
+  "question_count": 0,
+  "summary": null,
+  "extra": {
+    "onboarding_step": "role"
+  }
+}
