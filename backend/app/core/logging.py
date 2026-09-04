@@ -62,13 +62,14 @@ def configure_logging(level: str = "INFO") -> None:
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("httpcore").setLevel(logging.WARNING)
 
-    interview = logging.getLogger("nexus.interview")
-    interview.handlers.clear()
-    interview.setLevel(logging.DEBUG)
     plain = logging.StreamHandler(sys.stdout)
     plain.setFormatter(logging.Formatter("%(asctime)s [NEXUS] %(message)s", datefmt="%H:%M:%S"))
-    interview.addHandler(plain)
-    interview.propagate = False
+    for name in ("nexus.interview", "nexus.runner"):
+        named = logging.getLogger(name)
+        named.handlers.clear()
+        named.setLevel(logging.DEBUG)
+        named.addHandler(plain)
+        named.propagate = False
 
 
 def get_logger(name: str) -> logging.Logger:

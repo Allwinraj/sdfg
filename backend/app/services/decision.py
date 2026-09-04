@@ -77,6 +77,11 @@ _MODE_PROMPTS = {
 }
 
 
+POLICY_LLM_CAP = 15
+POLICY_LLM_TIMEOUT_SECONDS = 25.0
+_META_KEYS = {"_input_port", "_input_kind"}
+
+
 def collect_records(inputs: list[Envelope]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for env in inputs:
@@ -84,12 +89,64 @@ def collect_records(inputs: list[Envelope]) -> list[dict[str, Any]]:
         if payload.get("kind") == "knowledge":
             continue
         if isinstance(payload.get("rows"), list):
-            rows.extend(dict(row) for row in payload["rows"] if isinstance(row, dict))
+            for row in payload["rows"]:
+                if not isinstance(row, dict):
+                    continue
+                item = dict(row)
+                item["_input_port"] = env.port
+                item["_input_kind"] = payload.get("kind")
+                rows.append(item)
         elif payload.get("kind") in {"data", "table", "matches"}:
             continue
         elif payload:
-            rows.append(dict(payload))
+            item = dict(payload)
+            item["_input_port"] = env.port
+            item["_input_kind"] = payload.get("kind")
+            rows.append(item)
     return rows
+
+
+def rule_verdict(record: dict[str, Any]) -> dict[str, Any]:
+    port = str(record.get("_input_port") or "")
+    kind = str(record.get("_input_kind") or "")
+    nested = record.get("source") if isinstance(record.get("source"), dict) else {}
+    flag = record.get("flag")
+    if flag is None and isinstance(nested, dict):
+        flag = nested.get("flag")
+    status = str(record.get("status") or record.get("match_status") or nested.get("status") or "").lower()
+    if port in {"exceptions", "residuals", "unmatched"} or status in {
+        "exception",
+        "unmatched",
+        "residual",
+        "exceptions",
+        "residuals",
+    }:
+        return {
+            "verdict": "flagged",
+            "confidence": 1.0,
+            "explanation": "Unmatched or residual from matcher.",
+        }
+    if flag is True:
+        return {
+            "verdict": "flagged",
+            "confidence": 1.0,
+            "explanation": "Math gate flagged this row.",
+        }
+    if kind == "matches" and port and port not in {"matched", "default", ""}:
+        return {
+            "verdict": "flagged",
+            "confidence": 1.0,
+            "explanation": "Unmatched or residual from matcher.",
+        }
+    return {
+        "verdict": "approved",
+        "confidence": 1.0,
+        "explanation": "Passed match and math gates.",
+    }
+
+
+def strip_meta(record: dict[str, Any]) -> dict[str, Any]:
+    return {k: v for k, v in record.items() if k not in _META_KEYS}
 
 
 def passages_for(

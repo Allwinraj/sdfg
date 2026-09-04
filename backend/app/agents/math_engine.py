@@ -87,14 +87,23 @@ class MathEngine:
 
 
 def _rows(env: Envelope, ctx: RunContext) -> list[dict[str, Any]]:
-    raw: list[dict[str, Any]] = []
-    if env.payload.get("rows"):
-        raw = [dict(r) for r in env.payload["rows"]]
-    else:
-        for incoming in ctx.inputs:
-            if incoming.payload.get("rows"):
-                raw = [dict(r) for r in incoming.payload["rows"]]
-                break
+    matched: list[dict[str, Any]] = []
+    data: list[dict[str, Any]] = []
+    other: list[dict[str, Any]] = []
+    for incoming in ctx.inputs or [env]:
+        payload = incoming.payload or {}
+        rows = payload.get("rows")
+        if not isinstance(rows, list) or not rows:
+            continue
+        copied = [dict(r) for r in rows if isinstance(r, dict)]
+        kind = str(payload.get("kind") or "")
+        if kind == "matches" or incoming.port == "matched":
+            matched.extend(copied)
+        elif kind == "data":
+            data.extend(copied)
+        else:
+            other.extend(copied)
+    raw = matched or other or data
     return [flatten_record(r) for r in raw]
 
 

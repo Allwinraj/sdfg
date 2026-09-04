@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import asyncio
+import json
+
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from app.agents.base import AgentRegistry
@@ -117,6 +121,52 @@ async def run_saved_pipeline(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return _run_view(run)
+
+
+@router.post("/{pipeline_id}/run/stream")
+async def stream_saved_pipeline(
+    pipeline_id: str,
+    storage: Storage = Depends(get_storage),
+    llm: LLMProvider = Depends(get_llm),
+    registry: AgentRegistry = Depends(get_registry),
+):
+    pipeline = _pipeline(storage, pipeline_id)
+    queue: asyncio.Queue[dict | None] = asyncio.Queue()
+
+    async def on_event(event: dict) -> None:
+        await queue.put(event)
+
+    async def work() -> None:
+        try:
+            run = await run_library_pipeline(storage, llm, registry, pipeline, on_event=on_event)
+            await queue.put({"type": "result", "run": _run_view(run)})
+        except ValueError as exc:
+            await queue.put({"type": "error", "message": str(exc)})
+        except Exception as exc:
+            await queue.put({"type": "error", "message": str(exc)})
+        finally:
+            await queue.put(None)
+
+    async def generate():
+        task = asyncio.create_task(work())
+        try:
+            while True:
+                item = await queue.get()
+                if item is None:
+                    break
+                yield f"data: {json.dumps(item, default=str)}\n\n"
+        finally:
+            await task
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @router.post("/{pipeline_id}/ask")

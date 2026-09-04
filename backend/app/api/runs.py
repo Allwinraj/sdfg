@@ -121,6 +121,8 @@ def _run_view(run) -> dict:
                 "status": step.status,
                 "duration_ms": step.duration_ms,
                 "error": step.error,
+                "skip_reason": step.skip_reason,
+                "summary": step.summary,
                 "emitted_by": emitted,
                 "output_ports": [env.port for env in step.outputs],
             }

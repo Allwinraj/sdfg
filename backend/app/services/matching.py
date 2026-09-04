@@ -280,9 +280,7 @@ async def run_match(config: dict[str, Any], tables: list[SourceTable], llm) -> l
 
 async def _dedupe(config: dict[str, Any], table: SourceTable, llm) -> list[Unified]:
     keys = key_list(config)
-    semantic = (config.get("mode") or "").lower() == "semantic" or bool(
-        (config.get("flags") or {}).get("fuzzy")
-    )
+    semantic = (config.get("mode") or "").lower() == "semantic"
     aliases = await _aliases(llm, table.rows, config) if semantic else {}
     clusters: dict[tuple, list[int]] = defaultdict(list)
     for i, row in enumerate(table.rows):

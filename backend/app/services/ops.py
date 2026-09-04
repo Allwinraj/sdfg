@@ -43,6 +43,7 @@ async def run_library_pipeline(
     llm: LLMProvider,
     registry: AgentRegistry,
     pipeline: Pipeline,
+    on_event=None,
 ) -> Run:
     missing = missing_files(storage, pipeline)
     if missing:
@@ -51,7 +52,7 @@ async def run_library_pipeline(
     knowledge = None
     if storage.exists("knowledge", f"{pipeline.id}.json"):
         knowledge = load_knowledge(storage, pipeline.id)
-    runner = PipelineRunner(registry, storage, llm)
+    runner = PipelineRunner(registry, storage, llm, on_event=on_event)
     run = await runner.run(pipeline, knowledge=knowledge)
     run.extra["pipeline_id"] = pipeline.id
     run.extra["source"] = "library"

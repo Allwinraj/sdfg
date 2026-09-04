@@ -92,6 +92,74 @@ def resolve_theme(name: str | None) -> Theme:
     return THEMES.get(resolved, THEMES["executive_classic"])
 
 
+_FORMAT_ALIASES = {
+    "xlsx": "xlsx",
+    "xls": "xlsx",
+    "excel": "xlsx",
+    "spreadsheet": "xlsx",
+    "pdf": "pdf",
+    "report": "pdf",
+    "visual_pdf": "pdf",
+}
+
+
+def resolve_output_formats(
+    config: dict[str, Any] | None = None,
+    *,
+    node_mode: str | None = None,
+) -> list[str]:
+    """Mode on the Output node wins when it disagrees with a stale formats list."""
+    cfg = dict(config or {})
+    mode = str(cfg.get("mode") or node_mode or cfg.get("format") or "").strip().lower()
+    from_mode = _formats_from_mode(mode)
+    if from_mode:
+        return from_mode
+    from_list = _normalize_format_list(cfg.get("formats"))
+    if from_list:
+        return from_list
+    return ["xlsx"]
+
+
+def output_mode_from_formats(formats: list[str]) -> str:
+    has_pdf = "pdf" in formats
+    has_xlsx = "xlsx" in formats
+    if has_pdf and has_xlsx:
+        return "both"
+    if has_pdf:
+        return "pdf"
+    return "excel"
+
+
+def format_output_label(formats: list[str]) -> str:
+    pretty = []
+    if "xlsx" in formats:
+        pretty.append("Excel")
+    if "pdf" in formats:
+        pretty.append("PDF")
+    return "+".join(pretty) or "report"
+
+
+def _formats_from_mode(mode: str) -> list[str] | None:
+    if mode in {"pdf", "report", "visual_pdf"}:
+        return ["pdf"]
+    if mode in {"both", "all"}:
+        return ["xlsx", "pdf"]
+    if mode in {"excel", "xlsx", "xls"}:
+        return ["xlsx"]
+    return None
+
+
+def _normalize_format_list(raw: Any) -> list[str]:
+    if not isinstance(raw, list) or not raw:
+        return []
+    out: list[str] = []
+    for item in raw:
+        key = _FORMAT_ALIASES.get(str(item).lstrip(".").strip().lower())
+        if key and key not in out:
+            out.append(key)
+    return out
+
+
 def collect_streams(inputs: list[Envelope], config: dict[str, Any]) -> list[Stream]:
     labels = dict(config.get("tabs") or {})
     streams: list[Stream] = []

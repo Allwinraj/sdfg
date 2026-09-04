@@ -76,6 +76,41 @@ class CompiledLogic(BaseModel):
     inputs: list[str] = Field(default_factory=list)
 
 
+def infer_logic_from_english(
+    english: str, catalog: FormulaCatalog, config: dict[str, Any]
+) -> CompiledLogic | None:
+    text = english.lower()
+    catalog_id: str | None = None
+    if any(
+        token in text
+        for token in ("running balance", "previous plus", "deposit", "withdrawal", "running_balance")
+    ):
+        catalog_id = "running_balance"
+    elif "min" in text and ("percent" in text or "%" in text or "tolerance" in text):
+        catalog_id = "min_pct_amount_tolerance"
+    elif "variance" in text and "percent" in text:
+        catalog_id = "variance_pct"
+    elif "actual" in text and "budget" in text:
+        catalog_id = "variance_amount"
+    elif "sum" in text and ("group" in text or "total" in text):
+        catalog_id = "group_sum"
+    if not catalog_id:
+        return None
+    try:
+        item = catalog.get(catalog_id)
+    except KeyError:
+        return None
+    return CompiledLogic(
+        catalog_id=item.id,
+        ast=item.ast,
+        gate_ast=item.gate_ast,
+        shape=config.get("shape") or item.shape,
+        mode=config.get("mode") or item.mode,
+        output=config.get("output_column") or item.output,
+        inputs=item.inputs,
+    )
+
+
 async def compile_logic(config: dict[str, Any], llm) -> CompiledLogic:
     catalog = load_catalog(config.get("catalog_path"))
     if config.get("ast"):
@@ -110,6 +145,9 @@ async def compile_logic(config: dict[str, Any], llm) -> CompiledLogic:
     english = config.get("formula_en") or config.get("formula")
     if not english:
         raise ValueError("math node needs catalog_id, ast, or formula_en")
+    inferred = infer_logic_from_english(str(english), catalog, config)
+    if inferred:
+        return inferred
     prompt = (
         "Map this finance formula to a catalog id if it matches, else a sandboxed "
         "Python expression using only + - * / min max abs sum and comparisons. "

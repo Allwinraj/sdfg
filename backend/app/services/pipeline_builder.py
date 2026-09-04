@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from app.models.chat import ConfigPatch, ExtractedRequirement, InterviewSession, ProgressiveReveal
 from app.models.pipeline import Edge, Node, Pipeline, Port
+from app.services.exporter import output_mode_from_formats, resolve_output_formats
 from app.services.sessions import session_pipeline
 
 MATCH_KINDS = {"match", "matcher", "join", "keys"}
@@ -52,6 +53,7 @@ def desired_pipeline(session: InterviewSession) -> Pipeline:
                     "file_id": upload["file_id"],
                     "filename": upload.get("name") or upload["file_id"],
                     "schema": upload.get("schema") or [],
+                    "use_llm_schema": False,
                 },
                 ports=[Port(name="default")],
             )
@@ -173,6 +175,13 @@ def desired_pipeline(session: InterviewSession) -> Pipeline:
             config["constants"] = constants
         if math_cfg.get("compiled_from"):
             config["compiled_from"] = math_cfg["compiled_from"]
+        formula_text = str(math_cfg.get("formula_en") or "")
+        sequential = str(config.get("shape") or "").lower() == "sequential" or any(
+            token in formula_text.lower()
+            for token in ("running", "previous plus", "deposit", "withdrawal", "running balance")
+        )
+        if sequential:
+            config["shape"] = "sequential"
         nodes.append(
             Node(
                 id=nid,
@@ -184,7 +193,10 @@ def desired_pipeline(session: InterviewSession) -> Pipeline:
             )
         )
         for source in cursor_ids:
-            edges.append(_edge(source, nid, source_port=cursor_port))
+            _add_edge(edges, source, nid, source_port=cursor_port)
+        if sequential:
+            for did in data_ids:
+                _add_edge(edges, did, nid)
         cursor_ids = [nid]
         cursor_port = "default"
 
@@ -223,14 +235,23 @@ def desired_pipeline(session: InterviewSession) -> Pipeline:
 
     if caps.get("output") and (cursor_ids or side_edges):
         out_cfg = _req_value(session.requirements, OUTPUT_KINDS)
-        formats = list(caps.get("output_formats") or out_cfg.get("formats") or ["xlsx"])
+        req_formats = list(out_cfg.get("formats") or [])
+        cap_formats = list(caps.get("output_formats") or [])
+        formats = resolve_output_formats(
+            {
+                "mode": out_cfg.get("mode") or "",
+                "formats": req_formats or cap_formats,
+            }
+        )
+        mode = output_mode_from_formats(formats)
         nodes.append(
             Node(
                 id="output",
                 agent="output",
-                mode="excel" if formats == ["xlsx"] else ("pdf" if formats == ["pdf"] else "both"),
+                mode=mode,
                 label=str(out_cfg.get("label") or "Output"),
                 config={
+                    "mode": mode,
                     "formats": formats,
                     "theme": str(out_cfg.get("theme") or "executive_classic"),
                     "title": str(out_cfg.get("title") or "Nexus Report"),
@@ -313,7 +334,14 @@ def _apply_overrides(nodes: list[Node], overrides: dict) -> list[Node]:
             out.append(node)
             continue
         config = {**node.config, **patch}
-        out.append(node.model_copy(update={"config": config}))
+        updates: dict = {"config": config}
+        if node.agent == "output":
+            formats = resolve_output_formats(config, node_mode=str(config.get("mode") or node.mode))
+            config["formats"] = formats
+            config["mode"] = output_mode_from_formats(formats)
+            updates["config"] = config
+            updates["mode"] = config["mode"]
+        out.append(node.model_copy(update=updates))
     return out
 
 
@@ -333,3 +361,11 @@ def _edge(source: str, target: str, *, source_port: str = "default") -> Edge:
         source_port=source_port,
         target=target,
     )
+
+
+def _add_edge(edges: list[Edge], source: str, target: str, *, source_port: str = "default") -> None:
+    edge = _edge(source, target, source_port=source_port)
+    key = (edge.source, edge.source_port, edge.target)
+    if any((e.source, e.source_port, e.target) == key for e in edges):
+        return
+    edges.append(edge)

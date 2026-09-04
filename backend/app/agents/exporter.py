@@ -4,6 +4,7 @@ from app.agents.base import RunContext, registry
 from app.models.envelope import Envelope
 from app.services.exporter import (
     collect_streams,
+    resolve_output_formats,
     resolve_theme,
     summarize,
     write_pdf,
@@ -22,7 +23,9 @@ class Exporter:
         title = str(config.get("title") or "Nexus Report")
         streams = collect_streams(ctx.inputs or [env], config)
         kpis = summarize(streams)
-        formats = _formats(config)
+        formats = resolve_output_formats(
+            config, node_mode=ctx.node.mode if ctx.node else None
+        )
         charts = dict(config.get("charts") or {})
         node_id = ctx.node.id if ctx.node else env.node_id
         stem = str(config.get("filename") or f"{node_id}_{theme.id}")
@@ -61,18 +64,6 @@ class Exporter:
                 emitted_by="output@v1",
             )
         ]
-
-
-def _formats(config: dict) -> list[str]:
-    raw = config.get("formats")
-    if isinstance(raw, list) and raw:
-        return [str(item).lstrip(".").lower() for item in raw]
-    mode = str(config.get("mode") or (config.get("format") or "excel")).lower()
-    if mode in {"pdf", "report", "visual_pdf"}:
-        return ["pdf"]
-    if mode in {"both", "all"}:
-        return ["xlsx", "pdf"]
-    return ["xlsx"]
 
 
 registry.register(Exporter)

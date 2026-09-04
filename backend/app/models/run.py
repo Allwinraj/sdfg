@@ -23,6 +23,8 @@ class RunStep(BaseModel):
     outputs: list[Envelope] = Field(default_factory=list)
     duration_ms: float = 0.0
     error: str | None = None
+    skip_reason: str | None = None
+    summary: str = ""
 
 
 class Run(BaseModel):
