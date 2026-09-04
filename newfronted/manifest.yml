@@ -1,0 +1,14 @@
+---
+applications:
+  - name: nexus-ui
+    memory: 128M
+    disk_quota: 256M
+    instances: 1
+    timeout: 180
+    buildpacks:
+      - staticfile_buildpack
+    # VITE_API_BASE is baked in at `npm run build`. It is not read at cf push.
+    # PowerShell:
+    #   $env:VITE_API_BASE="https://<nexus-api-route>"
+    #   npm run build
+    #   cf push
