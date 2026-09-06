@@ -1,0 +1,182 @@
+JOURNEY 4 — Invoice payment confirmation (AR cash application)
+Owner review pack  ·  try this in Architect; mark anything that does not match
+
+What this proves
+----------------
+Same Nexus Architect as bank recon and 3-way match. Different finance process.
+An AR analyst confirms which invoices were paid from a noisy bank statement.
+No hardcoded cash-application template — the conversation + files design the pipeline.
+
+This journey is also the fixture for rich Super Agent output: Dashboard charts,
+How-it-works spreadsheet row justification, and on-demand Excel/PDF reports.
+
+User: AR / collections analyst, manufacturing, O2C.
+Goal: Match bank receipts to the invoice register by customer name, check amounts
+against a 1% or USD 50 tolerance, flag unpaid / short / duplicate items, download Excel.
+
+v1 note: download only (PDF/Excel). No Slack, email, ERP write-back, or tickets.
+
+
+--------------------------------------------------------------------------------
+THE FLOW WE WANT THE TEAM TO SIGN OFF
+--------------------------------------------------------------------------------
+
+  1. Three general questions
+        Who are you?  →  What industry?  →  What should AI improve?
+  2. Then the use case
+        What finance workflow do you want to build today?
+  3. Input files (working data)
+        Attach bank statement + customer invoices
+  4. Knowledge / policy (optional)
+        Attach AR Collections policy  — or type none / skip
+  5. Pipeline appears and keeps updating
+        Only the agents this use case needs (from the 5: Ingest, Matcher, Math, Decision, Output)
+  6. Interview (min 5, max 12–15)
+        Captures: match on customer name, 1% or USD 50 tolerance, split payments,
+        unpaid past 30 days escalate citing policy, Excel output
+  7. Confirm the pipeline
+  8. Save to Super Agents  →  Run  →  Dashboard / How it works / Reports
+
+
+--------------------------------------------------------------------------------
+HOW TO RUN THE DEMO
+--------------------------------------------------------------------------------
+
+Start:  python run.py
+Open:   Architect (Create Agent)
+Files:  augmented-data/journey-04-invoice-payment-confirmation/
+
+        Bank_Statement_June.xlsx     working data (~24 rows, receipts + payroll/fees)
+        Customer_Invoices.xlsx       working data (8 invoices)
+        AR_Collections_Policy.pdf    knowledge / policy
+
+
+--------------------------------------------------------------------------------
+SCRIPT — paste these replies in chat (in order)
+--------------------------------------------------------------------------------
+
+WARM-UP (3 general questions)
+
+  1.  I'm an AR collections analyst on the O2C team.
+
+  2.  Manufacturing — mid-market industrial, USD only.
+
+  3.  Confirm which customer invoices actually got paid from the bank feed, and surface shorts and unpaid items.
+
+USE CASE
+
+  4.  Invoice payment confirmation. Match bank statement receipts to the customer invoice register by customer name, check whether the amount paid matches the invoice total, and tell me for each invoice if it is paid, short, overpaid, or not paid.
+
+INPUT FILES
+
+  5.  Yes — I have the June bank statement and the customer invoice register.
+
+      [Attach]  Bank_Statement_June.xlsx
+                Customer_Invoices.xlsx
+
+KNOWLEDGE / POLICY
+
+  6.  Yes — attaching our AR collections and cash application policy.
+
+      [Attach]  AR_Collections_Policy.pdf
+
+INTERVIEW (typical answers — wait for Nexus, then paste)
+
+  7.  Pair on customer name. Bank lockbox names are messy — Northwind Wholesale Inc may show as NORTHWIND WHSLE CO. Do not use amount as a match key because shorts still need to pair.
+
+  8.  After the name match, compare invoice total to the amount received. Allow the lesser of one percent of the invoice or fifty dollars. Ten dollars under is fine; thousands under is not.
+
+  9.  One invoice can be paid with two deposits. Match them as a group. If cash is left over or a second full payment lands, call it out.
+
+ 10.  Anything unpaid more than thirty days past due is collections. Cite the AR policy so the reviewer knows why.
+
+ 11.  Excel workbook I can download — a sheet for paid, a sheet for partials, a sheet for exceptions. No Slack.
+
+ 12.  Read the point-by-point summary. If it is right, click Confirm pipeline.
+
+CONFIRM + SAVE + LIBRARY RUN
+
+      [Click] Confirm pipeline
+      [Click] Save
+      You land in Super Agents library.
+      [Click] Run
+      Attach the same file names. Press Send.
+      Open Dashboard (charts should follow this use case).
+      Open How it works — the output looks like Excel; click a row to see why it matched or failed.
+      Open Reports — generate Excel or PDF from the same sheets.
+
+
+--------------------------------------------------------------------------------
+WHAT NEXUS SHOULD BUILD (without the user saying "Matcher node")
+--------------------------------------------------------------------------------
+
+User says                                              Pipeline should capture
+-----------------------------------------------        --------------------------------
+Pair on customer name; messy lockbox names             Matcher semantic on customer_name / payer_name
+Do not use amount as a key                             Amount is NOT in matcher keys
+1% or USD 50, whichever is lower                       Math: min_pct_amount_tolerance, pct=0.01, amount=50
+                                                       actual=paid amount, expected=invoice total
+Split deposits; leftover called out                    Allocation / residuals port
+Unpaid > 30 days; cite policy                          Decision: aging + SOP citation
+Excel; paid / partial / exceptions                     Output: xlsx, tabs per port
+
+Expected canvas
+
+  Bank xlsx  ──┐
+               ├──► Matcher (name) ──matched──► Math (tolerance) ──► Decision ──► Output (Excel)
+  Invoices xlsx┘         │                                          ▲
+                         ├── residuals / exceptions ────────────────┘
+  AR policy ─────────────┴──────────────────────────────────────────┘
+
+
+--------------------------------------------------------------------------------
+WHAT SUCCESS LOOKS LIKE IN THE REPORT
+--------------------------------------------------------------------------------
+
+  • INV-24-6001 Helios Stores NA  $128,440.15  — exact, paid
+  • INV-24-6002 Northwind Wholesale Inc vs NORTHWIND WHSLE CO  $48,500.00  — name variant, paid
+  • INV-24-6003 Acme Distributors  invoiced $45,200.00 / received $45,190.00  — $10 short, inside tolerance
+  • INV-24-6004 Contoso Manufacturing  invoiced $88,400.00 / received $79,560.00  — out of tolerance, flagged
+  • INV-24-6005 Fastenal  invoiced $12,000.00 / received $15,000.00  — overpay, flagged
+  • INV-24-6006 Dealer AR Midwest  $32,000.00 in two deposits ($20k + $12k)  — split, paid
+  • INV-24-6007 Old Dominion Freight  $22,100.00  — never paid, past due, escalate
+  • INV-24-6008 ABM Industry  $6,400.00 paid twice  — duplicate, flagged
+  • Payroll, utilities, fees, sweep stay unmatched operating noise — not customer issues
+
+How it works: click INV-24-6003 and see
+  abs(45190.00 - 45200.00) = 10.00  vs  min(0.01 * 45200.00, 50.00) = 50.00  → pass
+Click INV-24-6004 and see
+  abs(79560.00 - 88400.00) = 8840.00  vs  50.00  → fail
+
+
+--------------------------------------------------------------------------------
+TEAM SIGN-OFF
+--------------------------------------------------------------------------------
+
+  [ ] 1. First three questions stay general (role, industry, AI priorities)
+  [ ] 2. Fourth question is the use case
+  [ ] 3. Then working files, then optional policy
+  [ ] 4. Canvas uses Matcher on names, Math on amounts, Decision on aging
+  [ ] 5. Dashboard charts follow this use case (paid vs short vs unpaid, not generic row counts only)
+  [ ] 6. How it works shows the output as a spreadsheet; clicking a row justifies it
+  [ ] 7. Reports can generate Excel/PDF from the same sheets
+  [ ] 8. Confirm, Save, library Run with the same file names
+
+Owner: __________________    Date: __________    OK / changes needed: __________
+
+
+--------------------------------------------------------------------------------
+QUICK COPY (chat only — happy path)
+--------------------------------------------------------------------------------
+
+I'm an AR collections analyst on the O2C team.
+Manufacturing — mid-market industrial, USD only.
+Confirm which customer invoices actually got paid from the bank feed, and surface shorts and unpaid items.
+Invoice payment confirmation. Match bank statement receipts to the customer invoice register by customer name, check whether the amount paid matches the invoice total, and tell me for each invoice if it is paid, short, overpaid, or not paid.
+Yes — I have the June bank statement and the customer invoice register.
+Yes — attaching our AR collections and cash application policy.
+Pair on customer name. Bank lockbox names are messy — Northwind Wholesale Inc may show as NORTHWIND WHSLE CO. Do not use amount as a match key because shorts still need to pair.
+After the name match, compare invoice total to the amount received. Allow the lesser of one percent of the invoice or fifty dollars. Ten dollars under is fine; thousands under is not.
+One invoice can be paid with two deposits. Match them as a group. If cash is left over or a second full payment lands, call it out.
+Anything unpaid more than thirty days past due is collections. Cite the AR policy so the reviewer knows why.
+Excel workbook I can download — a sheet for paid, a sheet for partials, a sheet for exceptions. No Slack.
