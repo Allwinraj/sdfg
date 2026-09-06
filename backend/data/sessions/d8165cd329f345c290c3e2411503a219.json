@@ -1,0 +1,1327 @@
+{
+  "id": "d8165cd329f345c290c3e2411503a219",
+  "status": "confirmed",
+  "confirmed": true,
+  "messages": [
+    {
+      "id": "f22aeb9376a94f4981f6a867107cf9c8",
+      "role": "assistant",
+      "content": "Welcome aboard! Let's get your finance pipeline set up.",
+      "meta": {
+        "kind": "welcome",
+        "upload_offer": null
+      }
+    },
+    {
+      "id": "86e4302672184dababaaf50f7d226cf3",
+      "role": "user",
+      "content": "I'm an AR collections analyst on the O2C team.",
+      "meta": {}
+    },
+    {
+      "id": "d0ec6e5866f7493698482d96a769b540",
+      "role": "assistant",
+      "content": "Got it, AR collections on O2C! What industry does your company operate in?",
+      "meta": {
+        "kind": "onboarding",
+        "upload_offer": null
+      }
+    },
+    {
+      "id": "915b3c5b9f7443a0b14ef37922e9c659",
+      "role": "user",
+      "content": "Manufacturing \u2014 mid-market industrial, USD only.",
+      "meta": {}
+    },
+    {
+      "id": "7228003d8e03420883e1e104cc45e46a",
+      "role": "assistant",
+      "content": "Thanks for sharing, mid-market industrial manufacturing is a great fit. What are your main AI priorities for streamlining your collections process?",
+      "meta": {
+        "kind": "onboarding",
+        "upload_offer": null
+      }
+    },
+    {
+      "id": "7c7e8f74741a4d919b8a3e59e4033a17",
+      "role": "user",
+      "content": "Confirm which customer invoices actually got paid from the bank feed, and surface shorts and unpaid items.",
+      "meta": {}
+    },
+    {
+      "id": "8fd4631025e446ad96d0ef8697508124",
+      "role": "assistant",
+      "content": "Got it, matching bank feeds to invoices to catch shorts and unpaids. What is your current workflow or tool stack for handling this?",
+      "meta": {
+        "kind": "onboarding",
+        "upload_offer": null
+      }
+    },
+    {
+      "id": "0470969b47f242d1b43c68889e200178",
+      "role": "user",
+      "content": "Invoice payment confirmation. Match bank statement receipts to the customer invoice register by customer name, check whether the amount paid matches the invoice total, and tell me for each invoice if it is paid, short, overpaid, or not paid.",
+      "meta": {}
+    },
+    {
+      "id": "03365f93876a4f59b9134bbee0ccdc9e",
+      "role": "assistant",
+      "content": "That workflow makes total sense. Would you like to upload your bank statement and invoice register now?",
+      "meta": {
+        "kind": "onboarding",
+        "upload_offer": "data"
+      }
+    },
+    {
+      "id": "d35ddd216df947e2a4fa91d7f2b66bb3",
+      "role": "user",
+      "content": "Attached working files: Bank_Statement_June.xlsx, Customer_Invoices.xlsx",
+      "meta": {
+        "kind": "upload",
+        "upload_kind": "data",
+        "files": [
+          {
+            "name": "Bank_Statement_June.xlsx",
+            "file_id": "Bank_Statement_June"
+          },
+          {
+            "name": "Customer_Invoices.xlsx",
+            "file_id": "Customer_Invoices"
+          }
+        ]
+      }
+    },
+    {
+      "id": "b240b3ad27ce47f79078d311f69d8c4d",
+      "role": "assistant",
+      "content": "Thanks for uploading those files! Do you have any matching policies, short-pay tolerances, or SOPs you'd like to share?",
+      "meta": {
+        "kind": "onboarding",
+        "upload_offer": "knowledge"
+      }
+    },
+    {
+      "id": "ded8eb58517d47fbbd53b186e26ef1ca",
+      "role": "user",
+      "content": "Attached reference document: AR_Collections_Policy.pdf",
+      "meta": {
+        "kind": "upload",
+        "upload_kind": "knowledge",
+        "files": [
+          {
+            "name": "AR_Collections_Policy.pdf",
+            "file_id": "AR_Collections_Policy"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dc19eee493ea40fc82de1adb2aaa6b81",
+      "role": "assistant",
+      "content": "Thanks for providing that policy document, it gives us all the precise rules we need. We're all set to build out the matching, tolerance calculations, and final workbook exports.\n\nWhen you line these files up, which fields tell you it's the same item?",
+      "meta": {
+        "kind": "turn",
+        "ready": false,
+        "question_count": 1
+      }
+    },
+    {
+      "id": "b94a5c8ab2c240c78de302131e20488b",
+      "role": "user",
+      "content": "Pair on customer name. Bank lockbox names are messy \u2014 Northwind Wholesale Inc may show as NORTHWIND WHSLE CO. Do not use amount as a match key because shorts still need to pair.",
+      "meta": {}
+    },
+    {
+      "id": "f29f85975172400eb661a0113c6a0084",
+      "role": "assistant",
+      "content": "Everything is fully set up and ready to run your AR collections pipeline.\n\nIf the numbers are a little off, how much difference is still acceptable?",
+      "meta": {
+        "kind": "turn",
+        "ready": false,
+        "question_count": 2
+      }
+    },
+    {
+      "id": "6b5b27f16a014b88a4ab60d7e48b532b",
+      "role": "user",
+      "content": "After the name match, compare invoice total to the amount received. Allow the lesser of one percent of the invoice or fifty dollars. Ten dollars under is fine; thousands under is not.",
+      "meta": {}
+    },
+    {
+      "id": "67ea5f48ab9747d59baee522725e8aa8",
+      "role": "assistant",
+      "content": "That tolerance rule is locked in and fully reflected in the pipeline.\n\nWhat should happen to rows that don't match or sit outside that range?",
+      "meta": {
+        "kind": "turn",
+        "ready": false,
+        "question_count": 3
+      }
+    },
+    {
+      "id": "ee43c67a030a471ca378e982f8fb74aa",
+      "role": "user",
+      "content": "One invoice can be paid with two deposits. Match them as a group. If cash is left over or a second full payment lands, call it out.",
+      "meta": {}
+    },
+    {
+      "id": "b0b26ac41a164575a867cc368d0fd9d8",
+      "role": "assistant",
+      "content": "Got it, group matching with leftover and duplicate tracking is fully incorporated.\n\nWho should review exceptions, and is there anything you can auto-approve?",
+      "meta": {
+        "kind": "turn",
+        "ready": false,
+        "question_count": 4
+      }
+    },
+    {
+      "id": "6dbb2396fcea4d728bc95ceb078f1d2e",
+      "role": "user",
+      "content": "nything unpaid more than thirty days past due is collections. Cite the AR policy so the reviewer knows why.",
+      "meta": {}
+    },
+    {
+      "id": "ced680ff264145b1956ba06256193e77",
+      "role": "assistant",
+      "content": "That collections guideline is captured, ensuring past due items get flagged with proper policy citations.\n\nWhat should I hand you at the end \u2014 Excel, PDF, or both?",
+      "meta": {
+        "kind": "turn",
+        "ready": false,
+        "question_count": 5
+      }
+    },
+    {
+      "id": "351d96245a5643e8a8a4dc19cd696985",
+      "role": "user",
+      "content": "Excel workbook I can download \u2014 a sheet for paid, a sheet for partials, a sheet for exceptions. No Slack.",
+      "meta": {}
+    },
+    {
+      "id": "ed06351b709d4904875e635f660a640d",
+      "role": "assistant",
+      "content": "Your Excel output with sheets for paid, partials, and exceptions is fully locked in and ready.\n\nAR collections pipeline matching bank receipts to customer invoices with name matching, tolerance checking, duplicate detection, collections escalation, and Excel workbook output.\n\nWhy this pipeline\n\u2022 Invoice payment confirmation. Match bank statement receipts to the customer invoice register by customer name, check whether the amount paid matches the invoice total, and tell me for each invoice if it is paid, short, overpaid, or not paid.\n\nWhat each step does\n1. Bank_Statement_June \u2014 Reads working file Bank_Statement_June.xlsx and detects its columns.\n2. Customer_Invoices \u2014 Reads working file Customer_Invoices.xlsx and detects its columns.\n3. AR_Collections_Policy \u2014 Reads the policy/reference file AR_Collections_Policy.pdf and keeps the rules for matching and review.\n4. Matcher \u2014 Pairs rows that share payer_name, customer_name. Dates may drift by 15 day(s). Leftovers and splits go to exceptions.\n5. Math \u2014 Applies: abs(actual - expected) > min(0.01 * expected, 50.00).\n6. Decision \u2014 Flags or approves using: Flag duplicate payments, cite the AR collections policy, and escalate invoices unpaid more than 30 days past due..\n7. Output \u2014 Builds a Excel report you can download.\n\nRead this through. If it matches what you need, confirm the pipeline \u2014 then Save it to the library to run it.",
+      "meta": {
+        "kind": "turn",
+        "ready": true,
+        "question_count": 5
+      }
+    },
+    {
+      "id": "1f3c73f961da4716a70f8ad88c957dce",
+      "role": "assistant",
+      "content": "Confirmed.\n\nWhy this pipeline\n\u2022 Invoice payment confirmation. Match bank statement receipts to the customer invoice register by customer name, check whether the amount paid matches the invoice total, and tell me for each invoice if it is paid, short, overpaid, or not paid.\n\nWhat each step does\n1. Bank_Statement_June \u2014 Reads working file Bank_Statement_June.xlsx and detects its columns.\n2. Customer_Invoices \u2014 Reads working file Customer_Invoices.xlsx and detects its columns.\n3. AR_Collections_Policy \u2014 Reads the policy/reference file AR_Collections_Policy.pdf and keeps the rules for matching and review.\n4. Matcher \u2014 Pairs rows that share payer_name, customer_name. Dates may drift by 15 day(s). Leftovers and splits go to exceptions.\n5. Math \u2014 Applies: abs(actual - expected) > min(0.01 * expected, 50.00).\n6. Decision \u2014 Flags or approves using: Flag duplicate payments, cite the AR collections policy, and escalate invoices unpaid more than 30 days past due..\n7. Output \u2014 Builds a Excel report you can download.\n\nNext: Save this to the Super Agents library. You run it from the library with files that use the same names (values can change).",
+      "meta": {
+        "kind": "confirm"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "match_req",
+      "kind": "match",
+      "value": {
+        "window_days": 15,
+        "keys": [
+          "payer_name",
+          "customer_name"
+        ],
+        "flags": {
+          "allocation": true
+        },
+        "mode": "fuzzy"
+      },
+      "source_message_id": "351d96245a5643e8a8a4dc19cd696985"
+    },
+    {
+      "id": "math_req",
+      "kind": "math",
+      "value": {
+        "constants": {
+          "pct": 0.01,
+          "amount": 50
+        },
+        "shape": "sequential",
+        "ast": "abs(actual - expected)",
+        "gate_ast": "abs(actual - expected) > min(pct * expected, amount)",
+        "mode": "hybrid",
+        "catalog_id": "min_pct_amount_tolerance",
+        "input_map": {
+          "actual": "amount",
+          "expected": "total_amount"
+        },
+        "formula_en": "abs(actual - expected) > min(0.01 * expected, 50.00)",
+        "output_output_column": "over_tolerance",
+        "compiled_from": "abs(actual - expected) > min(0.01 * expected, 50.00)"
+      },
+      "source_message_id": "351d96245a5643e8a8a4dc19cd696985"
+    },
+    {
+      "id": "decision_req",
+      "kind": "decision",
+      "value": {
+        "policy": "Flag duplicate payments, cite the AR collections policy, and escalate invoices unpaid more than 30 days past due."
+      },
+      "source_message_id": "351d96245a5643e8a8a4dc19cd696985"
+    },
+    {
+      "id": "output_req",
+      "kind": "output",
+      "value": {
+        "formats": [
+          "xlsx"
+        ]
+      },
+      "source_message_id": "351d96245a5643e8a8a4dc19cd696985"
+    }
+  ],
+  "pipeline": {
+    "id": "d8165cd329f345c290c3e2411503a219",
+    "name": "draft",
+    "version": "0.1",
+    "nodes": [
+      {
+        "id": "ingest_Bank_Statement_June",
+        "agent": "ingestion",
+        "mode": "data",
+        "behavior_ref": "",
+        "label": "Bank_Statement_June",
+        "config": {
+          "mode": "data",
+          "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d8165cd329f345c290c3e2411503a219\\Bank_Statement_June.xlsx",
+          "file_id": "Bank_Statement_June",
+          "filename": "Bank_Statement_June.xlsx",
+          "schema": [
+            {
+              "name": "statement_date",
+              "type": "date",
+              "samples": [
+                "2024-06-03",
+                "2024-06-04",
+                "2024-06-05",
+                "2024-06-06",
+                "2024-06-07"
+              ],
+              "source_name": "statement_date"
+            },
+            {
+              "name": "value_date",
+              "type": "date",
+              "samples": [
+                "2024-06-03",
+                "2024-06-04",
+                "2024-06-05",
+                "2024-06-06",
+                "2024-06-07"
+              ],
+              "source_name": "value_date"
+            },
+            {
+              "name": "bank_txn_id",
+              "type": "string",
+              "samples": [
+                "BNK-81001",
+                "BNK-81002",
+                "BNK-81003",
+                "BNK-81004",
+                "BNK-81005"
+              ],
+              "source_name": "bank_txn_id"
+            },
+            {
+              "name": "txn_type",
+              "type": "string",
+              "samples": [
+                "deposit",
+                "deposit",
+                "deposit",
+                "deposit",
+                "deposit"
+              ],
+              "source_name": "txn_type"
+            },
+            {
+              "name": "debit_credit",
+              "type": "string",
+              "samples": [
+                "CR",
+                "CR",
+                "CR",
+                "CR",
+                "CR"
+              ],
+              "source_name": "debit_credit"
+            },
+            {
+              "name": "amount",
+              "type": "decimal",
+              "samples": [
+                "128440.15",
+                48500,
+                45190,
+                79560,
+                15000
+              ],
+              "source_name": "amount"
+            },
+            {
+              "name": "reference_number",
+              "type": "string",
+              "samples": [
+                "INV-24-6001",
+                "INV-24-6002",
+                "INV-24-6003",
+                "INV-24-6004",
+                "INV-24-6005"
+              ],
+              "source_name": "reference_number"
+            },
+            {
+              "name": "payer_name",
+              "type": "string",
+              "samples": [
+                "Helios Stores NA",
+                "NORTHWIND WHSLE CO",
+                "Acme Distributors LLC",
+                "Contoso Manufacturing",
+                "Fastenal Company"
+              ],
+              "source_name": "payer_name"
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "samples": [
+                "Card settlement \u2014 Helios Retail POS",
+                "Incoming wire \u2014 customer remittance",
+                "ACH customer payment",
+                "ACH customer payment",
+                "Vendor rebate / overpay"
+              ],
+              "source_name": "description"
+            },
+            {
+              "name": "remittance_memo",
+              "type": "string",
+              "samples": [
+                "INV-24-6001 exact",
+                "INV-24-6002 name variant",
+                "INV-24-6003 short $10",
+                "INV-24-6004 short $8,840",
+                "INV-24-6005 overpay $3,000"
+              ],
+              "source_name": "remittance_memo"
+            },
+            {
+              "name": "branch",
+              "type": "string",
+              "samples": [
+                "Cincinnati OH",
+                "Cincinnati OH",
+                "Cincinnati OH",
+                "Cincinnati OH",
+                "Cincinnati OH"
+              ],
+              "source_name": "branch"
+            },
+            {
+              "name": "currency",
+              "type": "string",
+              "samples": [
+                "USD",
+                "USD",
+                "USD",
+                "USD",
+                "USD"
+              ],
+              "source_name": "currency"
+            }
+          ],
+          "use_llm_schema": false
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "default",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "ingest_Customer_Invoices",
+        "agent": "ingestion",
+        "mode": "data",
+        "behavior_ref": "",
+        "label": "Customer_Invoices",
+        "config": {
+          "mode": "data",
+          "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d8165cd329f345c290c3e2411503a219\\Customer_Invoices.xlsx",
+          "file_id": "Customer_Invoices",
+          "filename": "Customer_Invoices.xlsx",
+          "schema": [
+            {
+              "name": "invoice_number",
+              "type": "string",
+              "samples": [
+                "INV-24-6001",
+                "INV-24-6002",
+                "INV-24-6003",
+                "INV-24-6004",
+                "INV-24-6005"
+              ],
+              "source_name": "invoice_number"
+            },
+            {
+              "name": "invoice_date",
+              "type": "date",
+              "samples": [
+                "2024-05-02",
+                "2024-05-06",
+                "2024-05-08",
+                "2024-05-10",
+                "2024-05-12"
+              ],
+              "source_name": "invoice_date"
+            },
+            {
+              "name": "due_date",
+              "type": "date",
+              "samples": [
+                "2024-06-01",
+                "2024-06-05",
+                "2024-06-07",
+                "2024-06-09",
+                "2024-06-11"
+              ],
+              "source_name": "due_date"
+            },
+            {
+              "name": "customer_name",
+              "type": "string",
+              "samples": [
+                "Helios Stores NA",
+                "Northwind Wholesale Inc",
+                "Acme Distributors LLC",
+                "Contoso Manufacturing",
+                "Fastenal Company"
+              ],
+              "source_name": "customer_name"
+            },
+            {
+              "name": "customer_id",
+              "type": "string",
+              "samples": [
+                "C-1001",
+                "C-1044",
+                "C-1102",
+                "C-1188",
+                "C-1210"
+              ],
+              "source_name": "customer_id"
+            },
+            {
+              "name": "invoice_amount",
+              "type": "decimal",
+              "samples": [
+                "128440.15",
+                48500,
+                45200,
+                88400,
+                12000
+              ],
+              "source_name": "invoice_amount"
+            },
+            {
+              "name": "tax_amount",
+              "type": "integer",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "source_name": "tax_amount"
+            },
+            {
+              "name": "total_amount",
+              "type": "decimal",
+              "samples": [
+                "128440.15",
+                48500,
+                45200,
+                88400,
+                12000
+              ],
+              "source_name": "total_amount"
+            },
+            {
+              "name": "currency",
+              "type": "string",
+              "samples": [
+                "USD",
+                "USD",
+                "USD",
+                "USD",
+                "USD"
+              ],
+              "source_name": "currency"
+            },
+            {
+              "name": "payment_terms",
+              "type": "string",
+              "samples": [
+                "Net 30",
+                "Net 30",
+                "Net 30",
+                "Net 45",
+                "Net 15"
+              ],
+              "source_name": "payment_terms"
+            },
+            {
+              "name": "sales_rep",
+              "type": "string",
+              "samples": [
+                "R. Alvarez",
+                "T. Berg",
+                "H. Cole",
+                "R. Alvarez",
+                "T. Berg"
+              ],
+              "source_name": "sales_rep"
+            },
+            {
+              "name": "region",
+              "type": "string",
+              "samples": [
+                "Midwest",
+                "East",
+                "Midwest",
+                "West",
+                "Midwest"
+              ],
+              "source_name": "region"
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "samples": [
+                "open",
+                "open",
+                "open",
+                "open",
+                "open"
+              ],
+              "source_name": "status"
+            }
+          ],
+          "use_llm_schema": false
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "default",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "ingest_knowledge_AR_Collections_Policy",
+        "agent": "ingestion",
+        "mode": "knowledge",
+        "behavior_ref": "",
+        "label": "AR_Collections_Policy",
+        "config": {
+          "mode": "knowledge",
+          "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d8165cd329f345c290c3e2411503a219\\AR_Collections_Policy.pdf",
+          "file_id": "AR_Collections_Policy",
+          "filename": "AR_Collections_Policy.pdf",
+          "session_id": "d8165cd329f345c290c3e2411503a219"
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "default",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "matcher",
+        "agent": "matcher",
+        "mode": "fuzzy",
+        "behavior_ref": "",
+        "label": "Matcher",
+        "config": {
+          "mode": "fuzzy",
+          "keys": [
+            "payer_name",
+            "customer_name"
+          ],
+          "flags": {
+            "allocation": true
+          },
+          "window_days": 15,
+          "window": {
+            "days": 15
+          }
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "matched",
+            "direction": "out"
+          },
+          {
+            "name": "residuals",
+            "direction": "out"
+          },
+          {
+            "name": "exceptions",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "math",
+        "agent": "math",
+        "mode": "hybrid",
+        "behavior_ref": "",
+        "label": "Math",
+        "config": {
+          "mode": "hybrid",
+          "shape": "sequential",
+          "output_column": "over_tolerance",
+          "catalog_id": "min_pct_amount_tolerance",
+          "ast": "abs(actual - expected)",
+          "formula_en": "abs(actual - expected) > min(0.01 * expected, 50.00)",
+          "input_map": {
+            "actual": "amount",
+            "expected": "total_amount"
+          },
+          "gate_ast": "abs(actual - expected) > min(pct * expected, amount)",
+          "constants": {
+            "pct": 0.01,
+            "amount": 50
+          },
+          "compiled_from": "abs(actual - expected) > min(0.01 * expected, 50.00)"
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "default",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "decision",
+        "agent": "decision",
+        "mode": "approval",
+        "behavior_ref": "",
+        "label": "Decision",
+        "config": {
+          "mode": "approval",
+          "authority": "autonomous",
+          "confidence_threshold": 0.85,
+          "policy": "Flag duplicate payments, cite the AR collections policy, and escalate invoices unpaid more than 30 days past due."
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "approved",
+            "direction": "out"
+          },
+          {
+            "name": "flagged",
+            "direction": "out"
+          },
+          {
+            "name": "escalated",
+            "direction": "out"
+          }
+        ]
+      },
+      {
+        "id": "output",
+        "agent": "output",
+        "mode": "excel",
+        "behavior_ref": "",
+        "label": "Output",
+        "config": {
+          "mode": "excel",
+          "formats": [
+            "xlsx"
+          ],
+          "theme": "executive_classic",
+          "title": "Nexus Report"
+        },
+        "error_strategy": "emit_exceptions",
+        "ports": [
+          {
+            "name": "default",
+            "direction": "out"
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "e_ingest_Bank_Statement_June_default_matcher",
+        "source": "ingest_Bank_Statement_June",
+        "source_port": "default",
+        "target": "matcher",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_ingest_Customer_Invoices_default_matcher",
+        "source": "ingest_Customer_Invoices",
+        "source_port": "default",
+        "target": "matcher",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_ingest_knowledge_AR_Collections_Policy_default_matcher",
+        "source": "ingest_knowledge_AR_Collections_Policy",
+        "source_port": "default",
+        "target": "matcher",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_matcher_matched_math",
+        "source": "matcher",
+        "source_port": "matched",
+        "target": "math",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_ingest_Bank_Statement_June_default_math",
+        "source": "ingest_Bank_Statement_June",
+        "source_port": "default",
+        "target": "math",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_ingest_Customer_Invoices_default_math",
+        "source": "ingest_Customer_Invoices",
+        "source_port": "default",
+        "target": "math",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_math_default_decision",
+        "source": "math",
+        "source_port": "default",
+        "target": "decision",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_matcher_exceptions_decision",
+        "source": "matcher",
+        "source_port": "exceptions",
+        "target": "decision",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_matcher_residuals_decision",
+        "source": "matcher",
+        "source_port": "residuals",
+        "target": "decision",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_ingest_knowledge_AR_Collections_Policy_default_decision",
+        "source": "ingest_knowledge_AR_Collections_Policy",
+        "source_port": "default",
+        "target": "decision",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_decision_approved_output",
+        "source": "decision",
+        "source_port": "approved",
+        "target": "output",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_decision_flagged_output",
+        "source": "decision",
+        "source_port": "flagged",
+        "target": "output",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      },
+      {
+        "id": "e_decision_escalated_output",
+        "source": "decision",
+        "source_port": "escalated",
+        "target": "output",
+        "target_port": "default",
+        "type": "normal",
+        "condition": null
+      }
+    ],
+    "meta": {}
+  },
+  "uploads": [
+    {
+      "kind": "data",
+      "file_id": "Bank_Statement_June",
+      "name": "Bank_Statement_June.xlsx",
+      "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d8165cd329f345c290c3e2411503a219\\Bank_Statement_June.xlsx",
+      "label": "Bank_Statement_June",
+      "schema": [
+        {
+          "name": "statement_date",
+          "type": "date",
+          "samples": [
+            "2024-06-03",
+            "2024-06-04",
+            "2024-06-05",
+            "2024-06-06",
+            "2024-06-07"
+          ],
+          "source_name": "statement_date"
+        },
+        {
+          "name": "value_date",
+          "type": "date",
+          "samples": [
+            "2024-06-03",
+            "2024-06-04",
+            "2024-06-05",
+            "2024-06-06",
+            "2024-06-07"
+          ],
+          "source_name": "value_date"
+        },
+        {
+          "name": "bank_txn_id",
+          "type": "string",
+          "samples": [
+            "BNK-81001",
+            "BNK-81002",
+            "BNK-81003",
+            "BNK-81004",
+            "BNK-81005"
+          ],
+          "source_name": "bank_txn_id"
+        },
+        {
+          "name": "txn_type",
+          "type": "string",
+          "samples": [
+            "deposit",
+            "deposit",
+            "deposit",
+            "deposit",
+            "deposit"
+          ],
+          "source_name": "txn_type"
+        },
+        {
+          "name": "debit_credit",
+          "type": "string",
+          "samples": [
+            "CR",
+            "CR",
+            "CR",
+            "CR",
+            "CR"
+          ],
+          "source_name": "debit_credit"
+        },
+        {
+          "name": "amount",
+          "type": "decimal",
+          "samples": [
+            "128440.15",
+            48500,
+            45190,
+            79560,
+            15000
+          ],
+          "source_name": "amount"
+        },
+        {
+          "name": "reference_number",
+          "type": "string",
+          "samples": [
+            "INV-24-6001",
+            "INV-24-6002",
+            "INV-24-6003",
+            "INV-24-6004",
+            "INV-24-6005"
+          ],
+          "source_name": "reference_number"
+        },
+        {
+          "name": "payer_name",
+          "type": "string",
+          "samples": [
+            "Helios Stores NA",
+            "NORTHWIND WHSLE CO",
+            "Acme Distributors LLC",
+            "Contoso Manufacturing",
+            "Fastenal Company"
+          ],
+          "source_name": "payer_name"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "samples": [
+            "Card settlement \u2014 Helios Retail POS",
+            "Incoming wire \u2014 customer remittance",
+            "ACH customer payment",
+            "ACH customer payment",
+            "Vendor rebate / overpay"
+          ],
+          "source_name": "description"
+        },
+        {
+          "name": "remittance_memo",
+          "type": "string",
+          "samples": [
+            "INV-24-6001 exact",
+            "INV-24-6002 name variant",
+            "INV-24-6003 short $10",
+            "INV-24-6004 short $8,840",
+            "INV-24-6005 overpay $3,000"
+          ],
+          "source_name": "remittance_memo"
+        },
+        {
+          "name": "branch",
+          "type": "string",
+          "samples": [
+            "Cincinnati OH",
+            "Cincinnati OH",
+            "Cincinnati OH",
+            "Cincinnati OH",
+            "Cincinnati OH"
+          ],
+          "source_name": "branch"
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "samples": [
+            "USD",
+            "USD",
+            "USD",
+            "USD",
+            "USD"
+          ],
+          "source_name": "currency"
+        }
+      ],
+      "sheet": "Bank_June",
+      "row_count": 24
+    },
+    {
+      "kind": "data",
+      "file_id": "Customer_Invoices",
+      "name": "Customer_Invoices.xlsx",
+      "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d8165cd329f345c290c3e2411503a219\\Customer_Invoices.xlsx",
+      "label": "Customer_Invoices",
+      "schema": [
+        {
+          "name": "invoice_number",
+          "type": "string",
+          "samples": [
+            "INV-24-6001",
+            "INV-24-6002",
+            "INV-24-6003",
+            "INV-24-6004",
+            "INV-24-6005"
+          ],
+          "source_name": "invoice_number"
+        },
+        {
+          "name": "invoice_date",
+          "type": "date",
+          "samples": [
+            "2024-05-02",
+            "2024-05-06",
+            "2024-05-08",
+            "2024-05-10",
+            "2024-05-12"
+          ],
+          "source_name": "invoice_date"
+        },
+        {
+          "name": "due_date",
+          "type": "date",
+          "samples": [
+            "2024-06-01",
+            "2024-06-05",
+            "2024-06-07",
+            "2024-06-09",
+            "2024-06-11"
+          ],
+          "source_name": "due_date"
+        },
+        {
+          "name": "customer_name",
+          "type": "string",
+          "samples": [
+            "Helios Stores NA",
+            "Northwind Wholesale Inc",
+            "Acme Distributors LLC",
+            "Contoso Manufacturing",
+            "Fastenal Company"
+          ],
+          "source_name": "customer_name"
+        },
+        {
+          "name": "customer_id",
+          "type": "string",
+          "samples": [
+            "C-1001",
+            "C-1044",
+            "C-1102",
+            "C-1188",
+            "C-1210"
+          ],
+          "source_name": "customer_id"
+        },
+        {
+          "name": "invoice_amount",
+          "type": "decimal",
+          "samples": [
+            "128440.15",
+            48500,
+            45200,
+            88400,
+            12000
+          ],
+          "source_name": "invoice_amount"
+        },
+        {
+          "name": "tax_amount",
+          "type": "integer",
+          "samples": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "source_name": "tax_amount"
+        },
+        {
+          "name": "total_amount",
+          "type": "decimal",
+          "samples": [
+            "128440.15",
+            48500,
+            45200,
+            88400,
+            12000
+          ],
+          "source_name": "total_amount"
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "samples": [
+            "USD",
+            "USD",
+            "USD",
+            "USD",
+            "USD"
+          ],
+          "source_name": "currency"
+        },
+        {
+          "name": "payment_terms",
+          "type": "string",
+          "samples": [
+            "Net 30",
+            "Net 30",
+            "Net 30",
+            "Net 45",
+            "Net 15"
+          ],
+          "source_name": "payment_terms"
+        },
+        {
+          "name": "sales_rep",
+          "type": "string",
+          "samples": [
+            "R. Alvarez",
+            "T. Berg",
+            "H. Cole",
+            "R. Alvarez",
+            "T. Berg"
+          ],
+          "source_name": "sales_rep"
+        },
+        {
+          "name": "region",
+          "type": "string",
+          "samples": [
+            "Midwest",
+            "East",
+            "Midwest",
+            "West",
+            "Midwest"
+          ],
+          "source_name": "region"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "samples": [
+            "open",
+            "open",
+            "open",
+            "open",
+            "open"
+          ],
+          "source_name": "status"
+        }
+      ],
+      "sheet": "Invoices",
+      "row_count": 8
+    },
+    {
+      "kind": "knowledge",
+      "file_id": "AR_Collections_Policy",
+      "name": "AR_Collections_Policy.pdf",
+      "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d8165cd329f345c290c3e2411503a219\\AR_Collections_Policy.pdf",
+      "label": "AR_Collections_Policy",
+      "chunk_ids": [
+        "AR_Collections_Policy-e8ba05333a",
+        "AR_Collections_Policy-9e0bb249f8",
+        "AR_Collections_Policy-59ca61c8d7",
+        "AR_Collections_Policy-f8f929a7a4",
+        "AR_Collections_Policy-fb632b3129",
+        "AR_Collections_Policy-abe0b2a87a",
+        "AR_Collections_Policy-365ada6571"
+      ],
+      "fact_count": 8
+    }
+  ],
+  "question_count": 5,
+  "summary": "Why this pipeline\n\u2022 Invoice payment confirmation. Match bank statement receipts to the customer invoice register by customer name, check whether the amount paid matches the invoice total, and tell me for each invoice if it is paid, short, overpaid, or not paid.\n\nWhat each step does\n1. Bank_Statement_June \u2014 Reads working file Bank_Statement_June.xlsx and detects its columns.\n2. Customer_Invoices \u2014 Reads working file Customer_Invoices.xlsx and detects its columns.\n3. AR_Collections_Policy \u2014 Reads the policy/reference file AR_Collections_Policy.pdf and keeps the rules for matching and review.\n4. Matcher \u2014 Pairs rows that share payer_name, customer_name. Dates may drift by 15 day(s). Leftovers and splits go to exceptions.\n5. Math \u2014 Applies: abs(actual - expected) > min(0.01 * expected, 50.00).\n6. Decision \u2014 Flags or approves using: Flag duplicate payments, cite the AR collections policy, and escalate invoices unpaid more than 30 days past due..\n7. Output \u2014 Builds a Excel report you can download.",
+  "extra": {
+    "onboarding_step": "done",
+    "role": "AR collections analyst on the O2C team",
+    "industry": "Manufacturing \u2014 mid-market industrial, USD only",
+    "ai_priorities": "Confirm which customer invoices actually got paid from the bank feed, and surface shorts and unpaid items.",
+    "description": "Invoice payment confirmation. Match bank statement receipts to the customer invoice register by customer name, check whether the amount paid matches the invoice total, and tell me for each invoice if it is paid, short, overpaid, or not paid.",
+    "knowledge_facts": [
+      {
+        "id": "fact_1",
+        "kind": "entity",
+        "value": "Helios Industrial",
+        "chunk_id": "AR_Collections_Policy-e8ba05333a"
+      },
+      {
+        "id": "fact_2",
+        "kind": "constraint",
+        "value": "The invoice register is the source of truth for what is owed, and bank statements contain unrelated operating items that must not be treated as customer receipts.",
+        "chunk_id": "AR_Collections_Policy-9e0bb249f8"
+      },
+      {
+        "id": "fact_3",
+        "kind": "constraint",
+        "value": "Pair invoice rows to bank receipts on customer name / payer name using semantic normalization; do not use amount as a match key.",
+        "chunk_id": "AR_Collections_Policy-59ca61c8d7"
+      },
+      {
+        "id": "fact_4",
+        "kind": "threshold",
+        "value": "Allow the lesser of 1% of the invoice total or USD 50.00 as an amount tolerance.",
+        "chunk_id": "AR_Collections_Policy-f8f929a7a4"
+      },
+      {
+        "id": "fact_5",
+        "kind": "formula",
+        "value": "abs(actual \u2212 expected) > min(0.01 \u00d7 expected, 50.00)",
+        "chunk_id": "AR_Collections_Policy-f8f929a7a4"
+      },
+      {
+        "id": "fact_6",
+        "kind": "constraint",
+        "value": "A second payment of the same invoice amount is a duplicate and must be flagged.",
+        "chunk_id": "AR_Collections_Policy-fb632b3129"
+      },
+      {
+        "id": "fact_7",
+        "kind": "threshold",
+        "value": "Invoices with no bank receipt that are past due more than 30 calendar days escalate for collections.",
+        "chunk_id": "AR_Collections_Policy-abe0b2a87a"
+      },
+      {
+        "id": "fact_8",
+        "kind": "expected_outcome",
+        "value": "Excel workbook with a sheet per outcome: matched (paid), residuals (partial / split leftovers), exceptions (unpaid, duplicate, out-of-tolerance).",
+        "chunk_id": "AR_Collections_Policy-365ada6571"
+      }
+    ],
+    "node_overrides": {
+      "math": {
+        "catalog_id": "min_pct_amount_tolerance",
+        "input_map": {
+          "actual": "amount",
+          "expected": "total_amount"
+        },
+        "constants": {
+          "pct": 0.01,
+          "amount": 50
+        },
+        "formula_en": "abs(actual - expected) > min(0.01 * expected, 50.00)",
+        "shape": "sequential",
+        "mode": "hybrid",
+        "ast": "abs(actual - expected)",
+        "gate_ast": "abs(actual - expected) > min(pct * expected, amount)",
+        "output_column": "over_tolerance",
+        "compiled_from": "abs(actual - expected) > min(0.01 * expected, 50.00)"
+      }
+    },
+    "capabilities": {
+      "math_stages": 1,
+      "decision": true,
+      "keys": [
+        "payer_name",
+        "customer_name"
+      ],
+      "matcher": true,
+      "output": true,
+      "matcher_stages": 1,
+      "math": true,
+      "output_formats": [
+        "xlsx"
+      ]
+    },
+    "pending_slot": "next_detail",
+    "question_retries": 0,
+    "ready_to_confirm": true,
+    "pipeline_brief": "Why this pipeline\n\u2022 Invoice payment confirmation. Match bank statement receipts to the customer invoice register by customer name, check whether the amount paid matches the invoice total, and tell me for each invoice if it is paid, short, overpaid, or not paid.\n\nWhat each step does\n1. Bank_Statement_June \u2014 Reads working file Bank_Statement_June.xlsx and detects its columns.\n2. Customer_Invoices \u2014 Reads working file Customer_Invoices.xlsx and detects its columns.\n3. AR_Collections_Policy \u2014 Reads the policy/reference file AR_Collections_Policy.pdf and keeps the rules for matching and review.\n4. Matcher \u2014 Pairs rows that share payer_name, customer_name. Dates may drift by 15 day(s). Leftovers and splits go to exceptions.\n5. Math \u2014 Applies: abs(actual - expected) > min(0.01 * expected, 50.00).\n6. Decision \u2014 Flags or approves using: Flag duplicate payments, cite the AR collections policy, and escalate invoices unpaid more than 30 days past due..\n7. Output \u2014 Builds a Excel report you can download."
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "8edcef9af9614dab9d7678e9e6ab9907",
+  "status": "welcome",
+  "confirmed": false,
+  "messages": [
+    {
+      "id": "5755ad501a9e462ea7a7ea4bad79f5c2",
+      "role": "assistant",
+      "content": "Welcome! I'm Nexus, your finance pipeline co-pilot. To get started, what is your primary role?",
+      "meta": {
+        "kind": "welcome",
+        "upload_offer": null
+      }
+    },
+    {
+      "id": "e704f83cde9943229b3c9ee460908932",
+      "role": "user",
+      "content": "I'm an Accounts Payable manager on the P2P team at a mid-market manufacturer.",
+      "meta": {}
+    },
+    {
+      "id": "d56c12a76fb346f480025e2e247fb4eb",
+      "role": "assistant",
+      "content": "Nice to meet you! What specific industry is your manufacturing company operating in?",
+      "meta": {
+        "kind": "onboarding",
+        "upload_offer": null
+      }
+    }
+  ],
+  "requirements": [],
+  "pipeline": null,
+  "uploads": [],
+  "question_count": 0,
+  "summary": null,
+  "extra": {
+    "onboarding_step": "industry",
+    "role": "Accounts Payable manager"
+  }
+}

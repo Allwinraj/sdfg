@@ -1,0 +1,23 @@
+{
+  "id": "dae31e5a593145feb5d1886abc994382",
+  "status": "welcome",
+  "confirmed": false,
+  "messages": [
+    {
+      "id": "c5dc70d6b60f4dd4b8bf524baf269ec1",
+      "role": "assistant",
+      "content": "Hi \u2014 I'm Nexus. We'll shape your finance pipeline in a short chat, one step at a time.\n\nWhat best describes your role?",
+      "meta": {
+        "kind": "welcome"
+      }
+    }
+  ],
+  "requirements": [],
+  "pipeline": null,
+  "uploads": [],
+  "question_count": 0,
+  "summary": null,
+  "extra": {
+    "onboarding_step": "role"
+  }
+}

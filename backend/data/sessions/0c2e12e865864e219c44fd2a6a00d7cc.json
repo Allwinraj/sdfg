@@ -1,0 +1,24 @@
+{
+  "id": "0c2e12e865864e219c44fd2a6a00d7cc",
+  "status": "welcome",
+  "confirmed": false,
+  "messages": [
+    {
+      "id": "e8a286e21f6d418393ad30fec34df1dd",
+      "role": "assistant",
+      "content": "Welcome aboard! Let's get your finance pipeline set up.",
+      "meta": {
+        "kind": "welcome",
+        "upload_offer": null
+      }
+    }
+  ],
+  "requirements": [],
+  "pipeline": null,
+  "uploads": [],
+  "question_count": 0,
+  "summary": null,
+  "extra": {
+    "onboarding_step": "role"
+  }
+}

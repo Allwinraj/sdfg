@@ -1,0 +1,56 @@
+{
+  "id": "80c9713b84c74a33990744ff6a63684a",
+  "status": "welcome",
+  "confirmed": false,
+  "messages": [
+    {
+      "id": "2366526479a946ae9f20016d6c1dc4f2",
+      "role": "assistant",
+      "content": "Welcome! I'm Nexus, your finance pipeline co-pilot. To get started, what is your primary role?",
+      "meta": {
+        "kind": "welcome",
+        "upload_offer": null
+      }
+    },
+    {
+      "id": "8433235d26924a4db2ace8a8ab0e3021",
+      "role": "user",
+      "content": "I'm an Accounts Payable manager on the P2P team at a mid-market manufacturer.",
+      "meta": {}
+    },
+    {
+      "id": "8108f9e982ca46c7a70b35009adae58a",
+      "role": "assistant",
+      "content": "Nice to meet you! What specific industry does your manufacturing company operate in?",
+      "meta": {
+        "kind": "onboarding",
+        "upload_offer": null
+      }
+    },
+    {
+      "id": "4c99f7cc9a3142ea87928b28a4721a0e",
+      "role": "user",
+      "content": "Manufacturing \u2014 industrial components and MRO spend.",
+      "meta": {}
+    },
+    {
+      "id": "31693c208a164b29ab329f75839d0fee",
+      "role": "assistant",
+      "content": "Industrial components and MRO spend, got it. What are your main AI priorities for your AP pipeline right now?",
+      "meta": {
+        "kind": "onboarding",
+        "upload_offer": null
+      }
+    }
+  ],
+  "requirements": [],
+  "pipeline": null,
+  "uploads": [],
+  "question_count": 0,
+  "summary": null,
+  "extra": {
+    "onboarding_step": "ai_priorities",
+    "role": "Accounts Payable manager",
+    "industry": "Industrial components and MRO manufacturing"
+  }
+}
