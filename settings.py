@@ -77,22 +77,12 @@ class Settings(BaseSettings):
         return path
 
     def gemini_model_for(self, role: ModelRole) -> str:
-        overrides = {
-            "extraction": self.gemini_extraction_model,
-            "reasoning": self.gemini_reasoning_model,
-            "general": self.gemini_general_model,
-            "reconciliation": self.gemini_reconciliation_model,
-        }
-        return overrides[role] or self.gemini_model
+        # One Gemini model for every role so the prompt contract matches SAP gpt-4.1.
+        return self.gemini_model
 
     def sap_deployment_for(self, role: ModelRole) -> str:
-        mapping = {
-            "extraction": self.aicore_gpt40_mini_deployment_id,
-            "reasoning": self.aicore_gpt55_deployment_id,
-            "general": self.aicore_gpt41_deployment_id,
-            "reconciliation": self.aicore_gpt40_deployment_id,
-        }
-        return mapping[role] or mapping["general"] or mapping["extraction"] or mapping["reconciliation"]
+        # One SAP model for every role: gpt-4.1. Other deployment IDs in env are ignored.
+        return self.aicore_gpt41_deployment_id
 
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

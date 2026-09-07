@@ -226,7 +226,7 @@ async def handle_message(
     if step != "done":
         return await _handle_onboarding(storage, llm, session, content, step, user.id)
     turn = await _llm_turn(llm, session, content, trigger="message")
-    turn = _normalize_interview_turn(session, content, turn)
+    turn = _stabilize_interview_turn(session, content, turn)
     return await _apply_turn(storage, llm, session, turn, user.id)
 
 
@@ -296,14 +296,14 @@ async def handle_upload(
         session.extra.pop("upload_offer", None)
         _ilog(session, "upload.knowledge.start")
         turn = await _llm_turn(llm, session, note, trigger="upload")
-        turn = _normalize_interview_turn(session, note, turn)
+        turn = _stabilize_interview_turn(session, note, turn)
         result = await _apply_turn(storage, llm, session, turn, user.id)
         result["user_message"] = user.model_dump(mode="json")
         result["uploads"] = saved
         return result
 
     turn = await _llm_turn(llm, session, note, trigger="upload")
-    turn = _normalize_interview_turn(session, note, turn)
+    turn = _stabilize_interview_turn(session, note, turn)
     result = await _apply_turn(storage, llm, session, turn, user.id)
     result["user_message"] = user.model_dump(mode="json")
     result["uploads"] = saved
@@ -443,6 +443,8 @@ async def _handle_onboarding(
         session.extra.pop("upload_offer", None)
     if not str(turn.get("assistant_message") or "").strip():
         turn["assistant_message"] = ASK.get(next_step, "Got it.")
+    if next_step == "knowledge_prompt" and not session.extra.get("virtual_sources"):
+        session.extra["virtual_sources"] = _virtual_sources_from_text(content)
     _ilog(
         session,
         "onboarding.llm",
@@ -457,7 +459,7 @@ async def _handle_onboarding(
         session.status = "collecting"
         seed = str(session.extra.get("description") or content)
         interview = await _llm_turn(llm, session, seed, trigger="onboarding_done")
-        interview = _normalize_interview_turn(session, seed, interview)
+        interview = _stabilize_interview_turn(session, seed, interview)
         if not interview.get("requirements") and turn.get("requirements"):
             interview["requirements"] = turn["requirements"]
         if not interview.get("capabilities") and turn.get("capabilities"):
@@ -542,11 +544,7 @@ def _advance_onboarding(step: str, user_text: str) -> dict[str, Any]:
             return {"next_step": "data_interview", "upload_offer": None}
         return {"next_step": "data_prompt", "upload_offer": "data"}
     if step == "data_interview":
-        return {
-            "next_step": "knowledge_prompt",
-            "upload_offer": "knowledge",
-            "virtual_sources": _virtual_sources_from_text(text),
-        }
+        return {"next_step": "knowledge_prompt", "upload_offer": "knowledge"}
     if step == "knowledge_prompt":
         if _is_skip(text):
             return {"next_step": "done", "upload_offer": None}
@@ -576,16 +574,6 @@ def _maybe_reveal(session: InterviewSession) -> ProgressiveReveal | None:
     return delta
 
 
-def _capability_has_requirement(session: InterviewSession, agent: str) -> bool:
-    kinds = {
-        "matcher": MATCH_KINDS,
-        "math": MATH_KINDS,
-        "decision": DECISION_KINDS,
-        "output": OUTPUT_KINDS,
-    }.get(agent, set())
-    return any(req.kind.lower() in kinds for req in session.requirements)
-
-
 def _virtual_sources_from_text(text: str) -> list[dict[str, Any]]:
     """Parse 'bank csv with date, amount; ledger with date, amount' without an LLM."""
     sources: list[dict[str, Any]] = []
@@ -609,64 +597,6 @@ def _virtual_sources_from_text(text: str) -> list[dict[str, Any]]:
     return sources
 
 
-def _requirements_include_agent(requirements: list[dict[str, Any]], agent: str) -> bool:
-    kinds = {
-        "matcher": MATCH_KINDS,
-        "math": MATH_KINDS,
-        "decision": DECISION_KINDS,
-        "output": OUTPUT_KINDS,
-    }.get(agent, set())
-    return any(str(raw.get("kind") or "").lower() in kinds for raw in requirements)
-
-
-def _user_removed_agent(user_text: str, agent: str) -> bool:
-    lower = str(user_text or "").lower()
-    phrases = {
-        "decision": ("drop the decision", "skip decision", "remove decision", "without decision"),
-        "math": ("drop the math", "skip math", "remove math", "without math"),
-        "matcher": ("drop the matcher", "skip matcher", "remove matcher", "without matcher"),
-        "output": ("drop the output", "skip output", "remove output", "without output"),
-    }
-    return any(phrase in lower for phrase in phrases.get(agent, ()))
-
-
-def _merge_capabilities(
-    session: InterviewSession,
-    incoming: dict[str, Any] | None,
-    *,
-    user_text: str = "",
-    requirements: list[dict[str, Any]] | None = None,
-) -> dict[str, Any]:
-    """Keep capabilities stable across providers.
-
-    Some models omit flags or flip them off between turns. Once an agent is on, or
-    we already captured a requirement for it, it stays on unless the user removes it.
-    """
-    current = dict(session.extra.get("capabilities") or {})
-    if not incoming:
-        return current
-    out = {**current, **incoming}
-    reqs = list(requirements or [])
-    for agent in ("matcher", "math", "decision", "output"):
-        if incoming.get(agent) is True:
-            out[agent] = True
-        elif incoming.get(agent) is False:
-            if _user_removed_agent(user_text, agent):
-                out[agent] = False
-            elif _requirements_include_agent(reqs, agent):
-                out[agent] = True
-            elif current.get(agent):
-                out[agent] = True
-            else:
-                out[agent] = False
-        elif current.get(agent) or _capability_has_requirement(session, agent):
-            out[agent] = True
-    for key in ("matcher_stages", "math_stages", "keys", "output_formats"):
-        if incoming.get(key):
-            out[key] = incoming[key]
-    return out
-
-
 def _req_by_kind(requirements: list[dict[str, Any]], kinds: set[str]) -> dict[str, Any] | None:
     for raw in requirements:
         if str(raw.get("kind") or "").lower() in kinds:
@@ -685,105 +615,6 @@ def _ensure_requirement(
     created = {"id": req_id, "kind": kind, "value": {}}
     requirements.append(created)
     return created
-
-
-def _looks_like_match_keys(text: str) -> bool:
-    lower = str(text or "").lower()
-    if any(token in lower for token in (" key", " keys", "field", "column", "pair", "match on", "join on")):
-        return True
-    return bool(re.search(r"\b[a-z_]+(?:\s*(?:and|&|,)\s*[a-z_]+)+\b", lower))
-
-
-def _looks_like_policy(text: str) -> bool:
-    lower = str(text or "").lower()
-    return any(
-        token in lower
-        for token in (
-            "review",
-            "escalat",
-            "approve",
-            "exception",
-            "past due",
-            "duplicate",
-            "auto-approve",
-            "manager",
-        )
-    )
-
-
-def _looks_like_output_format(text: str) -> bool:
-    lower = str(text or "").lower()
-    return any(token in lower for token in ("excel", "xlsx", "pdf", "spreadsheet", "workbook"))
-
-
-def _backfill_requirements(
-    session: InterviewSession,
-    turn: dict[str, Any],
-    user_text: str,
-) -> None:
-    """Fill slots the model skipped using the user's own words."""
-    requirements = list(turn.get("requirements") or [])
-    text = str(user_text or "").strip()
-    caps = _merge_capabilities(
-        session,
-        turn.get("capabilities") or {},
-        user_text=text,
-        requirements=requirements,
-    )
-    turn["capabilities"] = caps
-    pending_slot = str(session.extra.get("pending_slot") or "")
-    if not text:
-        return
-
-    if caps.get("matcher"):
-        match = _ensure_requirement(requirements, "match-1", "match")
-        value = match.setdefault("value", {})
-        if pending_slot == "match_keys" or _looks_like_match_keys(text):
-            if not value.get("keys"):
-                keys = re.findall(r"[a-z][a-z0-9_]*", text.lower())
-                if keys:
-                    value["keys"] = keys[:6]
-        if "allocation" in text.lower() or "split" in text.lower():
-            flags = dict(value.get("flags") or {})
-            flags["allocation"] = True
-            value["flags"] = flags
-
-    if caps.get("math"):
-        math = _ensure_requirement(requirements, "math-1", "math")
-        value = math.setdefault("value", {})
-        if pending_slot == "tolerance_or_formula" or looks_like_formula_answer(text):
-            if not value.get("formula_en") and not value.get("catalog_id"):
-                value["formula_en"] = text
-        if not value.get("formula_en") and not value.get("catalog_id"):
-            phrase = math_phrase_from_session(session)
-            if phrase:
-                value["formula_en"] = phrase
-        if value.get("formula_en") or value.get("catalog_id"):
-            hydrated = compile_math_value_sync(value)
-            if hydrated.get("ast"):
-                math["value"] = hydrated
-
-    if caps.get("decision"):
-        decision = _ensure_requirement(requirements, "decision-1", "decision")
-        value = decision.setdefault("value", {})
-        if pending_slot == "exception_routing" or _looks_like_policy(text):
-            if not value.get("policy"):
-                value["policy"] = text
-
-    if caps.get("output"):
-        output = _ensure_requirement(requirements, "output-1", "output")
-        value = output.setdefault("value", {})
-        if pending_slot == "output_format" or _looks_like_output_format(text):
-            formats: list[str] = []
-            lower = text.lower()
-            if "excel" in lower or "xlsx" in lower or "spreadsheet" in lower:
-                formats.append("xlsx")
-            if "pdf" in lower:
-                formats.append("pdf")
-            if formats:
-                value["formats"] = formats
-
-    turn["requirements"] = requirements
 
 
 def _filter_requirements_by_capabilities(
@@ -806,67 +637,46 @@ def _filter_requirements_by_capabilities(
     return kept
 
 
-def _prune_turn_requirements(requirements: list[dict[str, Any]], caps: dict[str, Any]) -> list[dict[str, Any]]:
-    return [
-        raw
-        for raw in requirements
-        if _filter_requirements_by_capabilities(
-            [raw],
-            caps,
-        )
-    ]
-
-
-def _infer_capabilities_from_description(
+def _backfill_math_only(
     session: InterviewSession,
-    caps: dict[str, Any],
-) -> dict[str, Any]:
-    desc = str(session.extra.get("description") or "").lower()
-    if not desc:
-        return caps
-    out = dict(caps)
-    if any(token in desc for token in ("match", "reconcile", "invoice", "payment", "three-way", "bank")):
-        out["matcher"] = True
-    if any(token in desc for token in ("%", "tolerance", "variance", "threshold", "calculate", "formula")):
-        out["math"] = True
-    if any(token in desc for token in ("exception", "review", "approve", "escalat", "policy")):
-        out["decision"] = True
-    if out.get("matcher") or out.get("math") or out.get("decision"):
-        out.setdefault("output", True)
-    return out
+    turn: dict[str, Any],
+    user_text: str,
+) -> None:
+    """Only fill math when the user actually answered a tolerance question.
+
+    Broader backfill was forcing extra interview slots and breaking the flow.
+    """
+    text = str(user_text or "").strip()
+    if not text:
+        return
+    pending = str(session.extra.get("pending_slot") or "")
+    if pending != "tolerance_or_formula" and not looks_like_formula_answer(text):
+        return
+    requirements = list(turn.get("requirements") or [])
+    math = _req_by_kind(requirements, MATH_KINDS) or _ensure_requirement(requirements, "math-1", "math")
+    value = math.setdefault("value", {})
+    if not value.get("formula_en") and not value.get("catalog_id"):
+        value["formula_en"] = text
+    hydrated = compile_math_value_sync(value)
+    if hydrated.get("ast"):
+        math["value"] = hydrated
+    turn["requirements"] = requirements
 
 
-def _normalize_interview_turn(
+def _stabilize_interview_turn(
     session: InterviewSession,
     user_text: str,
     turn: dict[str, Any],
 ) -> dict[str, Any]:
-    """Provider-agnostic cleanup so Gemini and SAP AI Core behave the same."""
+    """Light touch-up only — trust the model for capabilities and questions."""
     normalized = dict(turn or {})
     if normalized.get("answer_relevant") is None:
         normalized["answer_relevant"] = True
-    if normalized.get("ask_question") is None:
-        normalized["ask_question"] = not bool(normalized.get("ready"))
     if normalized.get("confidence") is None:
         normalized["confidence"] = 0.5
     if normalized.get("ready") is None:
         normalized["ready"] = False
-    normalized["capabilities"] = _merge_capabilities(
-        session,
-        normalized.get("capabilities") or {},
-        user_text=user_text,
-        requirements=list(normalized.get("requirements") or []),
-    )
-    normalized["capabilities"] = _infer_capabilities_from_description(session, normalized["capabilities"])
-    inferred = capabilities_from(session)
-    for agent in ("matcher", "math", "decision", "output"):
-        if inferred.get(agent) and normalized["capabilities"].get(agent) is not False:
-            normalized["capabilities"][agent] = True
-    _backfill_requirements(session, normalized, user_text)
-    normalized["requirements"] = _prune_turn_requirements(
-        list(normalized.get("requirements") or []),
-        normalized.get("capabilities") or {},
-    )
+    _backfill_math_only(session, normalized, user_text)
     return normalized
 
 
@@ -889,16 +699,14 @@ async def _apply_turn(
         relevant = True
     if relevant:
         if turn.get("capabilities") is not None:
-            session.extra["capabilities"] = _merge_capabilities(
-                session,
-                turn["capabilities"],
-                user_text=str(session.messages[-1].content if session.messages else ""),
-                requirements=list(turn.get("requirements") or []),
+            session.extra["capabilities"] = {
+                **dict(session.extra.get("capabilities") or {}),
+                **turn["capabilities"],
+            }
+            session.requirements = _filter_requirements_by_capabilities(
+                session.requirements,
+                dict(session.extra.get("capabilities") or {}),
             )
-        session.requirements = _filter_requirements_by_capabilities(
-            session.requirements,
-            dict(session.extra.get("capabilities") or {}),
-        )
         _merge_requirements(session, turn.get("requirements") or [], source_message_id)
         await _hydrate_math_from_conversation(llm, session)
     if relevant and turn.get("is_description") and turn.get("assistant_message"):
@@ -962,11 +770,6 @@ async def _apply_turn(
         )
         ready_flag, question = _question_budget(session, {**turn, "ask_question": True, "ready": False})
 
-    wanted_question = question
-    question = _fresh_question(session, question)
-    if wanted_question and not question and _can_draft(session):
-        # Out of new things to ask: confirm the draft rather than stall on an ack.
-        ready_flag = True
     if question:
         session.question_count += 1
         session.status = "interview"
@@ -1068,21 +871,26 @@ def _question_budget(session: InterviewSession, turn: dict[str, Any]) -> tuple[b
     cannot = bool(turn.get("cannot_serve") or session.extra.get("cannot_serve"))
     if cannot:
         return False, None
-    if session.question_count >= MAX_QUESTIONS:
-        session.extra["suggest_handoff"] = True
-        return False, None
-    want_ask = bool(turn.get("ask_question", True))
-    question = (turn.get("question") or "").strip() or None
     drafted = _can_draft(session)
     if not drafted:
         return False, None
+    missing = _missing_slots(session)
+    want_ask = bool(turn.get("ask_question", True))
+    question = (turn.get("question") or "").strip() or None
+    if session.question_count >= MAX_QUESTIONS:
+        if missing:
+            session.extra["suggest_handoff"] = True
+            return False, None
+        return True, None
+    if session.question_count >= 12 and missing:
+        session.extra["suggest_handoff"] = True
     if session.question_count < MIN_QUESTIONS:
         return False, question or _fallback_question(session)
-    if llm_ready and confidence >= CONFIDENCE_STOP:
+    if not missing or (llm_ready and confidence >= CONFIDENCE_STOP):
         return True, None
-    if session.question_count >= MAX_QUESTIONS - 1 and want_ask:
-        return False, question or _fallback_question(session)
-    if want_ask:
+    if llm_ready and not want_ask and not missing:
+        return True, None
+    if want_ask or missing:
         return False, question or _fallback_question(session)
     if llm_ready:
         return True, None
@@ -1096,49 +904,6 @@ def _can_draft(session: InterviewSession) -> bool:
     ok = bool(has_description and (has_data or has_virtual))
     _ilog(session, "draft.check", ok=ok, files=has_data, virtual=has_virtual)
     return ok
-
-
-def _question_key(text: str) -> str:
-    return " ".join("".join(c for c in (text or "").casefold() if c.isalnum() or c.isspace()).split())
-
-
-def _asked_before(key: str, asked: list[str]) -> bool:
-    """Exact on the normalized text: punctuation and case drift are still repeats.
-
-    Deliberately not fuzzy — two questions about the same subject are usually
-    different questions, and suppressing one would lose a real slot.
-    """
-    return bool(key) and key in asked
-
-
-def _fresh_question(session: InterviewSession, question: str | None) -> str | None:
-    """Never ask an answered question again.
-
-    A model that re-asks has lost track of the transcript, and repeating it is what
-    makes the interview feel stuck. We move to the next open slot instead, and if
-    every slot has been asked we stop asking and let the draft speak for itself.
-    """
-    if not question:
-        return question
-    asked = [str(item) for item in (session.extra.get("asked_questions") or [])]
-    key = _question_key(question)
-    if _asked_before(key, asked):
-        alternative = next(
-            (
-                candidate
-                for candidate in _question_candidates(session)
-                if not _asked_before(_question_key(candidate), asked)
-            ),
-            None,
-        )
-        if not alternative:
-            _ilog(session, "interview.question.exhausted", repeated=question[:120])
-            return None
-        _ilog(session, "interview.question.deduped", repeated=question[:120])
-        question = alternative
-        key = _question_key(question)
-    session.extra["asked_questions"] = (asked + [key])[-24:]
-    return question
 
 
 def _already_asks(ack: str, question: str) -> bool:
@@ -1323,31 +1088,6 @@ def _conversation_snapshot(session: InterviewSession, user_text: str, trigger: s
     }
 
 
-async def _best_json(
-    llm: LLMProvider,
-    session: InterviewSession,
-    prompt: str,
-    schema: dict[str, Any],
-    temperature: float,
-    roles: tuple[str, ...] = ("reasoning", "general", "reconciliation"),
-) -> dict[str, Any]:
-    """Ask the roles in order until one answers.
-
-    The turn that extracts requirements leads with the strongest model because its
-    output becomes the pipeline. Either way a failed role must not end the turn:
-    falling through is what keeps the canned question from being replayed.
-    """
-    last: LLMError | None = None
-    for role in roles:
-        try:
-            return await llm.complete_json(role, prompt, schema, temperature)  # type: ignore[arg-type]
-        except LLMError as exc:
-            last = exc
-            log.warning("interview role %s failed: %s", role, exc)
-            _ilog(session, "llm.role.fallback", role=role, error=str(exc)[:300])
-    raise last or LLMError("no model role answered the interview turn")
-
-
 async def _llm_onboarding_turn(
     llm: LLMProvider,
     session: InterviewSession,
@@ -1372,15 +1112,7 @@ async def _llm_onboarding_turn(
         f"{json.dumps(snapshot, default=str)}"
     )
     _ilog(session, "llm.onboarding.request", trigger=trigger, user=user_text[:120])
-    # Onboarding is small talk with a small schema, so the fast model leads here.
-    turn = await _best_json(
-        llm,
-        session,
-        prompt,
-        ONBOARDING_SCHEMA,
-        0.35,
-        roles=("extraction", "general", "reconciliation"),
-    )
+    turn = await llm.complete_json("general", prompt, ONBOARDING_SCHEMA, 0.35)
     _ilog(session, "llm.onboarding.response", next=turn.get("next_step"), offer=turn.get("upload_offer"))
     return turn
 
@@ -1431,18 +1163,13 @@ async def _llm_turn(
         "Set capabilities from THIS process only. Never insert Matcher, Math, or Decision "
         "as placeholders. Do not add Knowledge ingest unless a knowledge file was uploaded. "
         "Repeat an agent type only for true multi-stage work. "
-        "Each answer should refine the live DAG — update keys/formula/policy so the canvas changes.\n\n"
+        "Each answer should refine the live DAG — update keys/formula/policy so the canvas changes.\n"
+        "After 5 follow-up questions, set ready true when missing_slots is empty. "
+        "Do not invent extra questions. The app stops at 15 and hands over if still unclear.\n\n"
         f"{json.dumps(snapshot, default=str)}"
     )
     _ilog(session, "llm.interview.request", trigger=trigger, user=user_text[:120])
-    turn = await _best_json(
-        llm,
-        session,
-        prompt,
-        TURN_SCHEMA,
-        0.2,
-        roles=("general", "extraction", "reconciliation", "reasoning"),
-    )
+    turn = await llm.complete_json("general", prompt, TURN_SCHEMA, 0.2)
     _ilog(
         session,
         "llm.interview.response",

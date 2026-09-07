@@ -133,11 +133,6 @@ def _load_ai_models(path: Path) -> dict[str, Any]:
     return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
 
 
-# The reasoning families (gpt-5.x, o1/o3/o4) reject the sampling knobs the chat
-# models expect: temperature must stay at its default, top_p/n are refused, and the
-# budget is max_completion_tokens because hidden reasoning tokens are billed to it.
-_REASONING_FAMILIES = ("gpt-5", "gpt5", "o1", "o3", "o4")
-
 # Everything the endpoint may refuse. `messages` is never negotiable.
 _TUNABLE_PARAMS = (
     "temperature",
@@ -149,11 +144,6 @@ _TUNABLE_PARAMS = (
     "reasoning_effort",
     "response_format",
 )
-
-
-def _is_reasoning_model(name: str | None) -> bool:
-    normalized = (name or "").strip().lower().replace("_", "-")
-    return any(normalized.startswith(family) for family in _REASONING_FAMILIES)
 
 
 def _rejected_params(body: str, payload: dict[str, Any]) -> set[str]:
@@ -560,19 +550,13 @@ class SAPAICoreProvider(_RetryingMixin):
         super().__init__(settings)
         self._client = client
         self.token_cache = token_cache or SAPTokenCache()
-        self._role_models: dict[str, str] = {
-            str(role): str(model)
-            for role, model in (
-                (_load_ai_models(settings.ai_models_path).get("roles") or {}).items()
-            )
-        }
         # A parameter a deployment has already refused, so we stop paying for that 400.
         self._refused: dict[str, set[str]] = {}
         # Roles whose deployment turned out to want the reasoning-style token budget.
         self._completion_budget: set[str] = set()
 
     def _model_name(self, role: ModelRole) -> str:
-        return self._role_models.get(role, "")
+        return "gpt-4.1"
 
     def _payload(
         self,
@@ -581,31 +565,24 @@ class SAPAICoreProvider(_RetryingMixin):
         temperature: float,
         schema: dict[str, Any] | None,
     ) -> dict[str, Any]:
+        # gpt-4.1 is a chat model: same knobs as Gemini. Never send gpt-5.5 reasoning fields.
         payload: dict[str, Any] = {
             "messages": [
                 {"role": "system", "content": GROUNDING_RULES},
                 {"role": "user", "content": prompt},
-            ]
+            ],
+            "temperature": temperature,
+            "top_p": 1,
+            "n": 1,
+            "seed": self.settings.llm_seed,
+            "max_tokens": self.settings.llm_max_output_tokens,
         }
-        if _is_reasoning_model(self._model_name(role)) or role in self._completion_budget:
-            # Reasoning tokens come out of this budget, so it has to be generous or
-            # the model thinks itself out of room and returns an empty message.
-            payload["max_completion_tokens"] = max(
-                self.settings.llm_max_output_tokens,
-                self.settings.llm_reasoning_max_output_tokens,
-            )
-            if self.settings.llm_reasoning_effort:
-                payload["reasoning_effort"] = self.settings.llm_reasoning_effort
-        else:
-            payload["temperature"] = temperature
-            # Mirrors the Gemini config so both routes sample as narrowly.
-            payload["top_p"] = 1
-            payload["n"] = 1
-            payload["seed"] = self.settings.llm_seed
-            payload["max_tokens"] = self.settings.llm_max_output_tokens
         if schema:
             payload["response_format"] = {"type": "json_object"}
-        for key in self._refused.get(role, set()):
+        if role in self._completion_budget and "max_tokens" not in self._refused.get(str(role), set()):
+            payload.pop("max_tokens", None)
+            payload["max_completion_tokens"] = self.settings.llm_max_output_tokens
+        for key in self._refused.get(str(role), set()):
             payload.pop(key, None)
         return payload
 
