@@ -1,0 +1,626 @@
+{
+  "id": "dd009f2fb69c495a91ccae8f363589da",
+  "name": "Untitled pipeline",
+  "version": "v1",
+  "nodes": [
+    {
+      "id": "ingest_Bank_Statement_May",
+      "agent": "ingestion",
+      "mode": "data",
+      "behavior_ref": "",
+      "label": "Bank_Statement_May",
+      "config": {
+        "mode": "data",
+        "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\pipelines\\dd009f2fb69c495a91ccae8f363589da\\files\\Bank_Statement_May.csv",
+        "file_id": "Bank_Statement_May",
+        "filename": "Bank_Statement_May.csv",
+        "schema": [
+          {
+            "name": "statement_date",
+            "type": "date",
+            "samples": [
+              "2024-05-01",
+              "2024-05-02",
+              "2024-05-03",
+              "2024-05-04",
+              "2024-05-05"
+            ]
+          },
+          {
+            "name": "value_date",
+            "type": "date",
+            "samples": [
+              "2024-05-01",
+              "2024-05-02",
+              "2024-05-03",
+              "2024-05-04",
+              "2024-05-05"
+            ]
+          },
+          {
+            "name": "bank_txn_id",
+            "type": "string",
+            "samples": [
+              "BNK-70000",
+              "BNK-70001",
+              "BNK-70002",
+              "BNK-70003",
+              "BNK-70004"
+            ]
+          },
+          {
+            "name": "txn_type",
+            "type": "string",
+            "samples": [
+              "opening",
+              "deposit",
+              "deposit",
+              "deposit",
+              "deposit"
+            ]
+          },
+          {
+            "name": "debit_credit",
+            "type": "string",
+            "samples": [
+              "CR",
+              "CR",
+              "CR",
+              "CR",
+              "CR"
+            ]
+          },
+          {
+            "name": "amount",
+            "type": "decimal",
+            "samples": [
+              "2450188.42",
+              "128440.15",
+              "131002.80",
+              "119880.40",
+              "142110.22"
+            ]
+          },
+          {
+            "name": "stated_running_balance",
+            "type": "decimal",
+            "samples": [
+              "2450188.42",
+              "2578628.57",
+              "2709631.37",
+              "2829511.77",
+              "2971621.99"
+            ]
+          },
+          {
+            "name": "reference_number",
+            "type": "string",
+            "samples": [
+              "OPEN-MAY",
+              "DEP-MAY-1001",
+              "DEP-MAY-1002",
+              "DEP-MAY-1003",
+              "DEP-MAY-1004"
+            ]
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "samples": [
+              "Opening collected balance",
+              "Card settlement \u2014 Helios Retail POS",
+              "Card settlement \u2014 Helios Retail POS",
+              "Card settlement \u2014 Helios Retail POS",
+              "Card settlement \u2014 Helios Retail POS"
+            ]
+          },
+          {
+            "name": "check_number",
+            "type": "integer",
+            "samples": [
+              "441900"
+            ]
+          },
+          {
+            "name": "counterparty",
+            "type": "string",
+            "samples": [
+              "First National \u2014 4481",
+              "Helios Stores NA",
+              "Helios Stores NA",
+              "Helios Stores NA",
+              "Helios Stores NA"
+            ]
+          },
+          {
+            "name": "branch",
+            "type": "string",
+            "samples": [
+              "Cincinnati OH",
+              "Cincinnati OH",
+              "Cincinnati OH",
+              "Cincinnati OH",
+              "Cincinnati OH"
+            ]
+          },
+          {
+            "name": "currency",
+            "type": "string",
+            "samples": [
+              "USD",
+              "USD",
+              "USD",
+              "USD",
+              "USD"
+            ]
+          }
+        ],
+        "use_llm_schema": false
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "default",
+          "direction": "out"
+        }
+      ]
+    },
+    {
+      "id": "ingest_GL_Cash_Export",
+      "agent": "ingestion",
+      "mode": "data",
+      "behavior_ref": "",
+      "label": "GL_Cash_Export",
+      "config": {
+        "mode": "data",
+        "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\pipelines\\dd009f2fb69c495a91ccae8f363589da\\files\\GL_Cash_Export.xlsx",
+        "file_id": "GL_Cash_Export",
+        "filename": "GL_Cash_Export.xlsx",
+        "schema": [
+          {
+            "name": "posting_date",
+            "type": "date",
+            "samples": [
+              "2024-05-01",
+              "2024-05-02",
+              "2024-05-03",
+              "2024-05-04",
+              "2024-05-05"
+            ]
+          },
+          {
+            "name": "document_number",
+            "type": "string",
+            "samples": [
+              "GL-90000",
+              "GL-90001",
+              "GL-90002",
+              "GL-90003",
+              "GL-90004"
+            ]
+          },
+          {
+            "name": "gl_account",
+            "type": "integer",
+            "samples": [
+              "111000",
+              "111000",
+              "111000",
+              "111000",
+              "111000"
+            ]
+          },
+          {
+            "name": "gl_account_name",
+            "type": "string",
+            "samples": [
+              "Cash \u2014 operating",
+              "Cash \u2014 operating",
+              "Cash \u2014 operating",
+              "Cash \u2014 operating",
+              "Cash \u2014 operating"
+            ]
+          },
+          {
+            "name": "amount",
+            "type": "decimal",
+            "samples": [
+              "2450188.42",
+              "128440.15",
+              "131002.8",
+              "119880.4",
+              "142110.22"
+            ]
+          },
+          {
+            "name": "debit_credit",
+            "type": "string",
+            "samples": [
+              "DR",
+              "DR",
+              "DR",
+              "DR",
+              "DR"
+            ]
+          },
+          {
+            "name": "reference_number",
+            "type": "string",
+            "samples": [
+              "OPEN-MAY",
+              "DEP-MAY-1001",
+              "DEP-MAY-1002",
+              "DEP-MAY-1003",
+              "DEP-MAY-1004"
+            ]
+          },
+          {
+            "name": "source_system",
+            "type": "string",
+            "samples": [
+              "S/4HANA",
+              "S/4HANA",
+              "S/4HANA",
+              "S/4HANA",
+              "S/4HANA"
+            ]
+          },
+          {
+            "name": "customer_or_vendor",
+            "type": "string",
+            "samples": [
+              "Internal",
+              "Helios Stores NA",
+              "Helios Stores NA",
+              "Helios Stores NA",
+              "Helios Stores NA"
+            ]
+          },
+          {
+            "name": "cost_center",
+            "type": "string",
+            "samples": [
+              "CC-TREAS",
+              "CC-TREAS",
+              "CC-TREAS",
+              "CC-TREAS",
+              "CC-TREAS"
+            ]
+          },
+          {
+            "name": "cleared_flag",
+            "type": "boolean",
+            "samples": [
+              "Y",
+              "Y",
+              "Y",
+              "Y",
+              "Y"
+            ]
+          },
+          {
+            "name": "value_date",
+            "type": "date",
+            "samples": [
+              "2024-05-01",
+              "2024-05-02",
+              "2024-05-03",
+              "2024-05-04",
+              "2024-05-05"
+            ]
+          },
+          {
+            "name": "currency",
+            "type": "string",
+            "samples": [
+              "USD",
+              "USD",
+              "USD",
+              "USD",
+              "USD"
+            ]
+          },
+          {
+            "name": "narration",
+            "type": "string",
+            "samples": [
+              "Balance brought forward",
+              "Card settlement \u2014 Helios Retail POS",
+              "Card settlement \u2014 Helios Retail POS",
+              "Card settlement \u2014 Helios Retail POS",
+              "Card settlement \u2014 Helios Retail POS"
+            ]
+          }
+        ],
+        "use_llm_schema": false
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "default",
+          "direction": "out"
+        }
+      ]
+    },
+    {
+      "id": "ingest_knowledge_Treasury_Recon_SOP",
+      "agent": "ingestion",
+      "mode": "knowledge",
+      "behavior_ref": "",
+      "label": "Treasury_Recon_SOP",
+      "config": {
+        "mode": "knowledge",
+        "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\pipelines\\dd009f2fb69c495a91ccae8f363589da\\files\\Treasury_Recon_SOP.pdf",
+        "file_id": "Treasury_Recon_SOP",
+        "filename": "Treasury_Recon_SOP.pdf",
+        "session_id": "dd009f2fb69c495a91ccae8f363589da"
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "default",
+          "direction": "out"
+        }
+      ]
+    },
+    {
+      "id": "matcher",
+      "agent": "matcher",
+      "mode": "fuzzy",
+      "behavior_ref": "",
+      "label": "Matcher",
+      "config": {
+        "mode": "fuzzy",
+        "keys": [
+          "amount",
+          "reference_number"
+        ],
+        "flags": {},
+        "window_days": 2,
+        "window": {
+          "days": 2
+        }
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "matched",
+          "direction": "out"
+        },
+        {
+          "name": "residuals",
+          "direction": "out"
+        },
+        {
+          "name": "exceptions",
+          "direction": "out"
+        }
+      ]
+    },
+    {
+      "id": "math",
+      "agent": "math",
+      "mode": "hybrid",
+      "behavior_ref": "",
+      "label": "Math",
+      "config": {
+        "mode": "hybrid",
+        "shape": "sequential",
+        "output_column": "over_tolerance",
+        "catalog_id": "min_pct_amount_tolerance",
+        "ast": "abs(actual - expected)",
+        "formula_en": "20 percent",
+        "input_map": {
+          "actual": "amount",
+          "expected": "stated_running_balance"
+        },
+        "gate_ast": "abs(actual - expected) > min(pct * expected, amount)",
+        "constants": {
+          "pct": 0.2
+        },
+        "compiled_from": "20 percent"
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "default",
+          "direction": "out"
+        }
+      ]
+    },
+    {
+      "id": "decision",
+      "agent": "decision",
+      "mode": "approval",
+      "behavior_ref": "",
+      "label": "Decision",
+      "config": {
+        "mode": "approval",
+        "authority": "autonomous",
+        "confidence_threshold": 0.85,
+        "policy": "Exceptions are sent for manual review by team members."
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "approved",
+          "direction": "out"
+        },
+        {
+          "name": "flagged",
+          "direction": "out"
+        },
+        {
+          "name": "escalated",
+          "direction": "out"
+        }
+      ]
+    },
+    {
+      "id": "output",
+      "agent": "output",
+      "mode": "excel",
+      "behavior_ref": "",
+      "label": "Output",
+      "config": {
+        "mode": "excel",
+        "formats": [
+          "xlsx"
+        ],
+        "theme": "executive_classic",
+        "title": "Nexus Report"
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "default",
+          "direction": "out"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_ingest_Bank_Statement_May_default_matcher",
+      "source": "ingest_Bank_Statement_May",
+      "source_port": "default",
+      "target": "matcher",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_ingest_GL_Cash_Export_default_matcher",
+      "source": "ingest_GL_Cash_Export",
+      "source_port": "default",
+      "target": "matcher",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_ingest_knowledge_Treasury_Recon_SOP_default_matcher",
+      "source": "ingest_knowledge_Treasury_Recon_SOP",
+      "source_port": "default",
+      "target": "matcher",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_matcher_matched_math",
+      "source": "matcher",
+      "source_port": "matched",
+      "target": "math",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_ingest_Bank_Statement_May_default_math",
+      "source": "ingest_Bank_Statement_May",
+      "source_port": "default",
+      "target": "math",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_ingest_GL_Cash_Export_default_math",
+      "source": "ingest_GL_Cash_Export",
+      "source_port": "default",
+      "target": "math",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_math_default_decision",
+      "source": "math",
+      "source_port": "default",
+      "target": "decision",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_matcher_exceptions_decision",
+      "source": "matcher",
+      "source_port": "exceptions",
+      "target": "decision",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_matcher_residuals_decision",
+      "source": "matcher",
+      "source_port": "residuals",
+      "target": "decision",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_ingest_knowledge_Treasury_Recon_SOP_default_decision",
+      "source": "ingest_knowledge_Treasury_Recon_SOP",
+      "source_port": "default",
+      "target": "decision",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_decision_approved_output",
+      "source": "decision",
+      "source_port": "approved",
+      "target": "output",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_decision_flagged_output",
+      "source": "decision",
+      "source_port": "flagged",
+      "target": "output",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_decision_escalated_output",
+      "source": "decision",
+      "source_port": "escalated",
+      "target": "output",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    }
+  ],
+  "meta": {
+    "file_slots": [
+      {
+        "node_id": "ingest_Bank_Statement_May",
+        "kind": "data",
+        "filename": "Bank_Statement_May.csv",
+        "label": "Bank_Statement_May"
+      },
+      {
+        "node_id": "ingest_GL_Cash_Export",
+        "kind": "data",
+        "filename": "GL_Cash_Export.xlsx",
+        "label": "GL_Cash_Export"
+      },
+      {
+        "node_id": "ingest_knowledge_Treasury_Recon_SOP",
+        "kind": "knowledge",
+        "filename": "Treasury_Recon_SOP.pdf",
+        "label": "Treasury_Recon_SOP"
+      }
+    ],
+    "brief": "Why this pipeline\n\u2022 like same whrere\n\nWhat each step does\n1. Bank_Statement_May \u2014 Reads working file Bank_Statement_May.csv and detects its columns.\n2. GL_Cash_Export \u2014 Reads working file GL_Cash_Export.xlsx and detects its columns.\n3. Treasury_Recon_SOP \u2014 Reads the policy/reference file Treasury_Recon_SOP.pdf and keeps the rules for matching and review.\n4. Matcher \u2014 Pairs rows that share amount, reference_number. Dates may drift by 2 day(s). Leftovers and splits go to exceptions.\n5. Math \u2014 Applies: 20 percent.\n6. Decision \u2014 Flags or approves using: Exceptions are sent for manual review by team members..\n7. Output \u2014 Builds a Excel report you can download.",
+    "purpose": "like same whrere",
+    "source_session_id": "4d6bba8a47eb4e3b92143002b9f68b51"
+  }
+}

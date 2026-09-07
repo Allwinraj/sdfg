@@ -1,0 +1,97 @@
+{
+  "session_id": "faf10bef627649f8be32e75729cd7883",
+  "documents": [
+    {
+      "file_id": "AR_Collections_Policy",
+      "original_path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\pipelines\\133c3ef1b13a4054a41f0f4309bf6bce\\files\\AR_Collections_Policy.pdf",
+      "chunks": [
+        {
+          "id": "AR_Collections_Policy-e8ba05333a",
+          "heading": "Document",
+          "text": "Helios Industrial\nDocument AR-SOP-2024.06  \u00b7  Effective 1 June 2024  \u00b7  Helios Industrial\nConfidential \u2014 Helios Industrial demo dataset  \u00b7  Not for production posting\n AR Collections & Cash Application Policy\nDocument AR-SOP-2024.06 \u00b7 Effective 1 June 2024 \u00b7 Helios Industrial",
+          "order": 0
+        },
+        {
+          "id": "AR_Collections_Policy-9e0bb249f8",
+          "heading": "1. Purpose",
+          "text": "Confirm which customer invoices were paid from the bank statement. The invoice register is the source of truth for what is\nowed. The bank statement contains many unrelated operating items (payroll, utilities, fees, sweeps) that must not be treated\nas customer receipts.",
+          "order": 1
+        },
+        {
+          "id": "AR_Collections_Policy-59ca61c8d7",
+          "heading": "2. Match rule (Matcher \u2014 names, not amounts)",
+          "text": "Pair invoice rows to bank receipts on customer name / payer name. Legal names may differ from lockbox names (for\nexample Northwind Wholesale Inc versus NORTHWIND WHSLE CO). Use semantic normalization. Do not fail a match\nsolely on spelling.\nDo not use amount as a match key. Short payments and overpayments must still pair so Finance can see the variance.",
+          "order": 2
+        },
+        {
+          "id": "AR_Collections_Policy-f8f929a7a4",
+          "heading": "3. Amount tolerance (Math Engine)",
+          "text": "After a name match, compare invoice total_amount to the paid bank amount. Allow the lesser of 1% of the invoice total\nor USD 50.00. Formula: abs(actual \u2212 expected) > min(0.01 \u00d7 expected, 50.00) flags the row.\nExample in-tolerance: invoice USD 45,200.00 vs receipt USD 45,190.00 (USD 10.00 under, under the USD 50 cap).\nExample out-of-tolerance: invoice USD 88,400.00 vs receipt USD 79,560.00.",
+          "order": 3
+        },
+        {
+          "id": "AR_Collections_Policy-fb632b3129",
+          "heading": "4. Split payments and duplicates",
+          "text": "One invoice may be settled by several deposits. Match them as a group and emit leftovers on residuals. One wire covering\ntwo invoices is the opposite allocation. A second payment of the same invoice amount is a duplicate and must be flagged.",
+          "order": 4
+        },
+        {
+          "id": "AR_Collections_Policy-abe0b2a87a",
+          "heading": "5. Aging and unpaid invoices",
+          "text": "Invoices with no bank receipt that are past due more than 30 calendar days escalate for collections. Cite this SOP in the\ndecision explanation. INV-24-6007 Old Dominion Freight USD 22,100.00 is the in-scope unpaid example.",
+          "order": 5
+        },
+        {
+          "id": "AR_Collections_Policy-365ada6571",
+          "heading": "6. Output",
+          "text": "Excel workbook with a sheet per outcome: matched (paid), residuals (partial / split leftovers), exceptions (unpaid,\nduplicate, out-of-tolerance). Download only \u2014 no Slack.",
+          "order": 6
+        }
+      ],
+      "facts": [
+        {
+          "id": "fact_source_of_truth",
+          "kind": "entity",
+          "value": "The invoice register is the source of truth for what is owed.",
+          "chunk_id": "AR_Collections_Policy-9e0bb249f8"
+        },
+        {
+          "id": "fact_match_rule",
+          "kind": "constraint",
+          "value": "Pair invoice rows to bank receipts on customer name / payer name using semantic normalization; do not use amount as a match key.",
+          "chunk_id": "AR_Collections_Policy-59ca61c8d7"
+        },
+        {
+          "id": "fact_amount_tolerance_threshold",
+          "kind": "threshold",
+          "value": "Allow the lesser of 1% of the invoice total or USD 50.00.",
+          "chunk_id": "AR_Collections_Policy-f8f929a7a4"
+        },
+        {
+          "id": "fact_amount_tolerance_formula",
+          "kind": "formula",
+          "value": "abs(actual - expected) > min(0.01 * expected, 50.00)",
+          "chunk_id": "AR_Collections_Policy-f8f929a7a4"
+        },
+        {
+          "id": "fact_duplicate_payment",
+          "kind": "constraint",
+          "value": "A second payment of the same invoice amount is a duplicate and must be flagged.",
+          "chunk_id": "AR_Collections_Policy-fb632b3129"
+        },
+        {
+          "id": "fact_aging_threshold",
+          "kind": "threshold",
+          "value": "Invoices with no bank receipt that are past due more than 30 calendar days escalate for collections.",
+          "chunk_id": "AR_Collections_Policy-abe0b2a87a"
+        },
+        {
+          "id": "fact_output_format",
+          "kind": "expected_outcome",
+          "value": "Excel workbook with a sheet per outcome: matched (paid), residuals (partial / split leftovers), exceptions (unpaid, duplicate, out-of-tolerance). Download only.",
+          "chunk_id": "AR_Collections_Policy-365ada6571"
+        }
+      ]
+    }
+  ]
+}

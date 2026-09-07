@@ -1,0 +1,636 @@
+{
+  "id": "cf1f04cc89754d2baae3984e830cb52c",
+  "name": "Untitled pipeline",
+  "version": "v1",
+  "nodes": [
+    {
+      "id": "ingest_Bank_Statement_June",
+      "agent": "ingestion",
+      "mode": "data",
+      "behavior_ref": "",
+      "label": "Bank_Statement_June",
+      "config": {
+        "mode": "data",
+        "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\pipelines\\cf1f04cc89754d2baae3984e830cb52c\\files\\Bank_Statement_June.xlsx",
+        "file_id": "Bank_Statement_June",
+        "filename": "Bank_Statement_June.xlsx",
+        "schema": [
+          {
+            "name": "statement_date",
+            "type": "date",
+            "samples": [
+              "2024-06-03",
+              "2024-06-04",
+              "2024-06-05",
+              "2024-06-06",
+              "2024-06-07"
+            ],
+            "source_name": "statement_date"
+          },
+          {
+            "name": "value_date",
+            "type": "date",
+            "samples": [
+              "2024-06-03",
+              "2024-06-04",
+              "2024-06-05",
+              "2024-06-06",
+              "2024-06-07"
+            ],
+            "source_name": "value_date"
+          },
+          {
+            "name": "bank_txn_id",
+            "type": "string",
+            "samples": [
+              "BNK-81001",
+              "BNK-81002",
+              "BNK-81003",
+              "BNK-81004",
+              "BNK-81005"
+            ],
+            "source_name": "bank_txn_id"
+          },
+          {
+            "name": "txn_type",
+            "type": "string",
+            "samples": [
+              "deposit",
+              "deposit",
+              "deposit",
+              "deposit",
+              "deposit"
+            ],
+            "source_name": "txn_type"
+          },
+          {
+            "name": "debit_credit",
+            "type": "string",
+            "samples": [
+              "CR",
+              "CR",
+              "CR",
+              "CR",
+              "CR"
+            ],
+            "source_name": "debit_credit"
+          },
+          {
+            "name": "amount",
+            "type": "decimal",
+            "samples": [
+              "128440.15",
+              48500,
+              45190,
+              79560,
+              15000
+            ],
+            "source_name": "amount"
+          },
+          {
+            "name": "reference_number",
+            "type": "string",
+            "samples": [
+              "INV-24-6001",
+              "INV-24-6002",
+              "INV-24-6003",
+              "INV-24-6004",
+              "INV-24-6005"
+            ],
+            "source_name": "reference_number"
+          },
+          {
+            "name": "payer_name",
+            "type": "string",
+            "samples": [
+              "Helios Stores NA",
+              "NORTHWIND WHSLE CO",
+              "Acme Distributors LLC",
+              "Contoso Manufacturing",
+              "Fastenal Company"
+            ],
+            "source_name": "payer_name"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "samples": [
+              "Card settlement \u2014 Helios Retail POS",
+              "Incoming wire \u2014 customer remittance",
+              "ACH customer payment",
+              "ACH customer payment",
+              "Vendor rebate / overpay"
+            ],
+            "source_name": "description"
+          },
+          {
+            "name": "remittance_memo",
+            "type": "string",
+            "samples": [
+              "INV-24-6001 exact",
+              "INV-24-6002 name variant",
+              "INV-24-6003 short $10",
+              "INV-24-6004 short $8,840",
+              "INV-24-6005 overpay $3,000"
+            ],
+            "source_name": "remittance_memo"
+          },
+          {
+            "name": "branch",
+            "type": "string",
+            "samples": [
+              "Cincinnati OH",
+              "Cincinnati OH",
+              "Cincinnati OH",
+              "Cincinnati OH",
+              "Cincinnati OH"
+            ],
+            "source_name": "branch"
+          },
+          {
+            "name": "currency",
+            "type": "string",
+            "samples": [
+              "USD",
+              "USD",
+              "USD",
+              "USD",
+              "USD"
+            ],
+            "source_name": "currency"
+          }
+        ],
+        "use_llm_schema": false
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "default",
+          "direction": "out"
+        }
+      ]
+    },
+    {
+      "id": "ingest_Customer_Invoices",
+      "agent": "ingestion",
+      "mode": "data",
+      "behavior_ref": "",
+      "label": "Customer_Invoices",
+      "config": {
+        "mode": "data",
+        "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\pipelines\\cf1f04cc89754d2baae3984e830cb52c\\files\\Customer_Invoices.xlsx",
+        "file_id": "Customer_Invoices",
+        "filename": "Customer_Invoices.xlsx",
+        "schema": [
+          {
+            "name": "invoice_number",
+            "type": "string",
+            "samples": [
+              "INV-24-6001",
+              "INV-24-6002",
+              "INV-24-6003",
+              "INV-24-6004",
+              "INV-24-6005"
+            ],
+            "source_name": "invoice_number"
+          },
+          {
+            "name": "invoice_date",
+            "type": "date",
+            "samples": [
+              "2024-05-02",
+              "2024-05-06",
+              "2024-05-08",
+              "2024-05-10",
+              "2024-05-12"
+            ],
+            "source_name": "invoice_date"
+          },
+          {
+            "name": "due_date",
+            "type": "date",
+            "samples": [
+              "2024-06-01",
+              "2024-06-05",
+              "2024-06-07",
+              "2024-06-09",
+              "2024-06-11"
+            ],
+            "source_name": "due_date"
+          },
+          {
+            "name": "customer_name",
+            "type": "string",
+            "samples": [
+              "Helios Stores NA",
+              "Northwind Wholesale Inc",
+              "Acme Distributors LLC",
+              "Contoso Manufacturing",
+              "Fastenal Company"
+            ],
+            "source_name": "customer_name"
+          },
+          {
+            "name": "customer_id",
+            "type": "string",
+            "samples": [
+              "C-1001",
+              "C-1044",
+              "C-1102",
+              "C-1188",
+              "C-1210"
+            ],
+            "source_name": "customer_id"
+          },
+          {
+            "name": "invoice_amount",
+            "type": "decimal",
+            "samples": [
+              "128440.15",
+              48500,
+              45200,
+              88400,
+              12000
+            ],
+            "source_name": "invoice_amount"
+          },
+          {
+            "name": "tax_amount",
+            "type": "integer",
+            "samples": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "source_name": "tax_amount"
+          },
+          {
+            "name": "total_amount",
+            "type": "decimal",
+            "samples": [
+              "128440.15",
+              48500,
+              45200,
+              88400,
+              12000
+            ],
+            "source_name": "total_amount"
+          },
+          {
+            "name": "currency",
+            "type": "string",
+            "samples": [
+              "USD",
+              "USD",
+              "USD",
+              "USD",
+              "USD"
+            ],
+            "source_name": "currency"
+          },
+          {
+            "name": "payment_terms",
+            "type": "string",
+            "samples": [
+              "Net 30",
+              "Net 30",
+              "Net 30",
+              "Net 45",
+              "Net 15"
+            ],
+            "source_name": "payment_terms"
+          },
+          {
+            "name": "sales_rep",
+            "type": "string",
+            "samples": [
+              "R. Alvarez",
+              "T. Berg",
+              "H. Cole",
+              "R. Alvarez",
+              "T. Berg"
+            ],
+            "source_name": "sales_rep"
+          },
+          {
+            "name": "region",
+            "type": "string",
+            "samples": [
+              "Midwest",
+              "East",
+              "Midwest",
+              "West",
+              "Midwest"
+            ],
+            "source_name": "region"
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "samples": [
+              "open",
+              "open",
+              "open",
+              "open",
+              "open"
+            ],
+            "source_name": "status"
+          }
+        ],
+        "use_llm_schema": false
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "default",
+          "direction": "out"
+        }
+      ]
+    },
+    {
+      "id": "ingest_knowledge_AR_Collections_Policy",
+      "agent": "ingestion",
+      "mode": "knowledge",
+      "behavior_ref": "",
+      "label": "AR_Collections_Policy",
+      "config": {
+        "mode": "knowledge",
+        "path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\pipelines\\cf1f04cc89754d2baae3984e830cb52c\\files\\AR_Collections_Policy.pdf",
+        "file_id": "AR_Collections_Policy",
+        "filename": "AR_Collections_Policy.pdf",
+        "session_id": "cf1f04cc89754d2baae3984e830cb52c"
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "default",
+          "direction": "out"
+        }
+      ]
+    },
+    {
+      "id": "matcher",
+      "agent": "matcher",
+      "mode": "fuzzy",
+      "behavior_ref": "",
+      "label": "Matcher",
+      "config": {
+        "mode": "fuzzy",
+        "keys": [
+          "payer_name",
+          "customer_name"
+        ],
+        "flags": {
+          "allocation": true
+        },
+        "window_days": 15,
+        "window": {
+          "days": 15
+        }
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "matched",
+          "direction": "out"
+        },
+        {
+          "name": "residuals",
+          "direction": "out"
+        },
+        {
+          "name": "exceptions",
+          "direction": "out"
+        }
+      ]
+    },
+    {
+      "id": "math",
+      "agent": "math",
+      "mode": "hybrid",
+      "behavior_ref": "",
+      "label": "Math",
+      "config": {
+        "mode": "hybrid",
+        "shape": "sequential",
+        "output_column": "over_tolerance",
+        "catalog_id": "min_pct_amount_tolerance",
+        "ast": "abs(actual - expected)",
+        "formula_en": "abs(actual - expected) > min(0.01 * expected, 50.00)",
+        "input_map": {
+          "actual": "amount",
+          "expected": "total_amount"
+        },
+        "gate_ast": "abs(actual - expected) > min(pct * expected, amount)",
+        "constants": {
+          "pct": 0.01,
+          "amount": 50
+        },
+        "compiled_from": "abs(actual - expected) > min(0.01 * expected, 50.00)"
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "default",
+          "direction": "out"
+        }
+      ]
+    },
+    {
+      "id": "decision",
+      "agent": "decision",
+      "mode": "approval",
+      "behavior_ref": "",
+      "label": "Decision",
+      "config": {
+        "mode": "approval",
+        "authority": "autonomous",
+        "confidence_threshold": 0.85,
+        "policy": "Flag duplicate payments, cite the AR collections policy, and escalate invoices unpaid more than 30 days past due."
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "approved",
+          "direction": "out"
+        },
+        {
+          "name": "flagged",
+          "direction": "out"
+        },
+        {
+          "name": "escalated",
+          "direction": "out"
+        }
+      ]
+    },
+    {
+      "id": "output",
+      "agent": "output",
+      "mode": "excel",
+      "behavior_ref": "",
+      "label": "Output",
+      "config": {
+        "mode": "excel",
+        "formats": [
+          "xlsx"
+        ],
+        "theme": "executive_classic",
+        "title": "Nexus Report"
+      },
+      "error_strategy": "emit_exceptions",
+      "ports": [
+        {
+          "name": "default",
+          "direction": "out"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_ingest_Bank_Statement_June_default_matcher",
+      "source": "ingest_Bank_Statement_June",
+      "source_port": "default",
+      "target": "matcher",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_ingest_Customer_Invoices_default_matcher",
+      "source": "ingest_Customer_Invoices",
+      "source_port": "default",
+      "target": "matcher",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_ingest_knowledge_AR_Collections_Policy_default_matcher",
+      "source": "ingest_knowledge_AR_Collections_Policy",
+      "source_port": "default",
+      "target": "matcher",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_matcher_matched_math",
+      "source": "matcher",
+      "source_port": "matched",
+      "target": "math",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_ingest_Bank_Statement_June_default_math",
+      "source": "ingest_Bank_Statement_June",
+      "source_port": "default",
+      "target": "math",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_ingest_Customer_Invoices_default_math",
+      "source": "ingest_Customer_Invoices",
+      "source_port": "default",
+      "target": "math",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_math_default_decision",
+      "source": "math",
+      "source_port": "default",
+      "target": "decision",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_matcher_exceptions_decision",
+      "source": "matcher",
+      "source_port": "exceptions",
+      "target": "decision",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_matcher_residuals_decision",
+      "source": "matcher",
+      "source_port": "residuals",
+      "target": "decision",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_ingest_knowledge_AR_Collections_Policy_default_decision",
+      "source": "ingest_knowledge_AR_Collections_Policy",
+      "source_port": "default",
+      "target": "decision",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_decision_approved_output",
+      "source": "decision",
+      "source_port": "approved",
+      "target": "output",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_decision_flagged_output",
+      "source": "decision",
+      "source_port": "flagged",
+      "target": "output",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    },
+    {
+      "id": "e_decision_escalated_output",
+      "source": "decision",
+      "source_port": "escalated",
+      "target": "output",
+      "target_port": "default",
+      "type": "normal",
+      "condition": null
+    }
+  ],
+  "meta": {
+    "file_slots": [
+      {
+        "node_id": "ingest_Bank_Statement_June",
+        "kind": "data",
+        "filename": "Bank_Statement_June.xlsx",
+        "label": "Bank_Statement_June"
+      },
+      {
+        "node_id": "ingest_Customer_Invoices",
+        "kind": "data",
+        "filename": "Customer_Invoices.xlsx",
+        "label": "Customer_Invoices"
+      },
+      {
+        "node_id": "ingest_knowledge_AR_Collections_Policy",
+        "kind": "knowledge",
+        "filename": "AR_Collections_Policy.pdf",
+        "label": "AR_Collections_Policy"
+      }
+    ],
+    "brief": "Why this pipeline\n\u2022 Invoice payment confirmation. Match bank statement receipts to the customer invoice register by customer name, check whether the amount paid matches the invoice total, and tell me for each invoice if it is paid, short, overpaid, or not paid.\n\nWhat each step does\n1. Bank_Statement_June \u2014 Reads working file Bank_Statement_June.xlsx and detects its columns.\n2. Customer_Invoices \u2014 Reads working file Customer_Invoices.xlsx and detects its columns.\n3. AR_Collections_Policy \u2014 Reads the policy/reference file AR_Collections_Policy.pdf and keeps the rules for matching and review.\n4. Matcher \u2014 Pairs rows that share payer_name, customer_name. Dates may drift by 15 day(s). Leftovers and splits go to exceptions.\n5. Math \u2014 Applies: abs(actual - expected) > min(0.01 * expected, 50.00).\n6. Decision \u2014 Flags or approves using: Flag duplicate payments, cite the AR collections policy, and escalate invoices unpaid more than 30 days past due..\n7. Output \u2014 Builds a Excel report you can download.",
+    "purpose": "Invoice payment confirmation. Match bank statement receipts to the customer invoice register by customer name, check whether the amount paid matches the invoice total, and tell me for each invoice if it is paid, short, overpaid, or not paid.",
+    "source_session_id": "d8165cd329f345c290c3e2411503a219"
+  }
+}

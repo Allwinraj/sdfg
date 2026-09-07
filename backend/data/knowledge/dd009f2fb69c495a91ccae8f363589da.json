@@ -1,0 +1,73 @@
+{
+  "session_id": "4d6bba8a47eb4e3b92143002b9f68b51",
+  "documents": [
+    {
+      "file_id": "Treasury_Recon_SOP",
+      "original_path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\4d6bba8a47eb4e3b92143002b9f68b51\\Treasury_Recon_SOP.pdf",
+      "chunks": [
+        {
+          "id": "Treasury_Recon_SOP-b6a1ed7d2b",
+          "heading": "Document",
+          "text": "Helios Industrial\nDocument TR-SOP-441  \u00b7  Retail R2R close  \u00b7  First National operating account ****4481\nConfidential \u2014 Helios Industrial demo dataset  \u00b7  Not for production posting\n Treasury Bank Reconciliation SOP\nDocument TR-SOP-441 \u00b7 Retail R2R close \u00b7 First National operating account ****4481",
+          "order": 0
+        },
+        {
+          "id": "Treasury_Recon_SOP-778c797566",
+          "heading": "1. Match rule",
+          "text": "Match bank statement lines to general-ledger cash postings on Amount and Reference Number. Posting date may differ\nfrom statement date by up to two business days (temporal window). Single-currency USD only.\nCustomer remittances may land as one bank deposit covering several AR documents. Use allocation (M:N) matching and\nemit unapplied cash on the residuals port.",
+          "order": 1
+        },
+        {
+          "id": "Treasury_Recon_SOP-9a012d3dc8",
+          "heading": "2. Running balance",
+          "text": "Computed collected balance = previous stated balance + deposits \u2212 withdrawals, row by row in statement order. Flag any\nrow where computed balance differs from the bank\u2019s stated running balance.",
+          "order": 2
+        },
+        {
+          "id": "Treasury_Recon_SOP-1b33a0dabe",
+          "heading": "3. Stale items",
+          "text": "Uncleared checks and deposits in transit older than 30 calendar days are high risk. Cite this SOP in the decision\nexplanation. Outstanding April checks CHK-440112 (USD 8,750.00) and CHK-440188 (USD 4,120.55) are in-scope\nexamples for the May close.",
+          "order": 3
+        },
+        {
+          "id": "Treasury_Recon_SOP-2d4d3f41b5",
+          "heading": "4. Output",
+          "text": "Certified PDF audit report with match-status summary and a controller sign-off block. Live chat or ticket dispatch is not\npart of this SOP.",
+          "order": 4
+        }
+      ],
+      "facts": [
+        {
+          "id": "fact_1",
+          "kind": "threshold",
+          "value": "Posting date may differ from statement date by up to two business days (temporal window).",
+          "chunk_id": "Treasury_Recon_SOP-778c797566"
+        },
+        {
+          "id": "fact_2",
+          "kind": "constraint",
+          "value": "Single-currency USD only.",
+          "chunk_id": "Treasury_Recon_SOP-778c797566"
+        },
+        {
+          "id": "fact_3",
+          "kind": "formula",
+          "value": "Computed collected balance = previous stated balance + deposits \u2212 withdrawals, row by row in statement order.",
+          "chunk_id": "Treasury_Recon_SOP-9a012d3dc8"
+        },
+        {
+          "id": "fact_4",
+          "kind": "threshold",
+          "value": "Uncleared checks and deposits in transit older than 30 calendar days are high risk.",
+          "chunk_id": "Treasury_Recon_SOP-1b33a0dabe"
+        },
+        {
+          "id": "fact_5",
+          "kind": "expected_outcome",
+          "value": "Certified PDF audit report with match-status summary and a controller sign-off block.",
+          "chunk_id": "Treasury_Recon_SOP-2d4d3f41b5"
+        }
+      ]
+    }
+  ]
+}

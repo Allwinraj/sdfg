@@ -1,0 +1,91 @@
+{
+  "session_id": "d20ff9fe55894121897887b20e51e9ca",
+  "documents": [
+    {
+      "file_id": "AP_Procurement_Policy_2024",
+      "original_path": "C:\\Users\\Allwin\\OneDrive\\Desktop\\FMS\\template_v4\\backend\\data\\uploads\\d20ff9fe55894121897887b20e51e9ca\\AP_Procurement_Policy_2024.pdf",
+      "chunks": [
+        {
+          "id": "AP_Procurement_Policy_2024-a6db62aa27",
+          "heading": "Document",
+          "text": "Helios Industrial\nDocument AP-SOP-2024.07  \u00b7  Effective 1 January 2024  \u00b7  Mid-market manufacturing\nConfidential \u2014 Helios Industrial demo dataset  \u00b7  Not for production posting\n AP & Procurement Policy 2024\nDocument AP-SOP-2024.07 \u00b7 Effective 1 January 2024 \u00b7 Mid-market manufacturing",
+          "order": 0
+        },
+        {
+          "id": "AP_Procurement_Policy_2024-710a5adad8",
+          "heading": "1. Purpose and domain",
+          "text": "This policy governs three-way match of purchase orders, goods receipts, and vendor invoices for Helios Industrial (P2P).\nAll amounts are United States dollars. Multi-currency conversion is not authorized in this revision.\nMatch keys for structural alignment are PO Number and PO Line Item ID. Vendor legal names may differ across ERP,\npacking slips, and invoices (for example Dell Inc versus Dell Computers). Semantic normalization is required; do not fail a\nmatch solely on vendor spelling.",
+          "order": 1
+        },
+        {
+          "id": "AP_Procurement_Policy_2024-c5713792ba",
+          "heading": "2. Price and quantity tolerance (Math Engine \u2014 not Matcher)",
+          "text": "The Matcher records evidence only. Numeric gates are applied after match: allow the lesser of 2% of PO line amount or\nUSD 50.00. Formula: MIN(0.02 \u00d7 po_line_amount, 50.00). Variances inside the gate stay on the matched path; larger gaps\nflag for buyer review.\nA two-cent rounding difference is a near-match, not an automatic reject.",
+          "order": 2
+        },
+        {
+          "id": "AP_Procurement_Policy_2024-857f358270",
+          "heading": "3. Unreceived invoices (Decision / approval gateway)",
+          "text": "If an invoice has no matching goods receipt and the invoice total is under USD 500.00 and the vendor is classified Tier-1\nin the vendor master, Accounts Payable may auto-approve.\nAll other unreceived invoices route to buyer review, including Tier-2/Tier-3 vendors and any invoice at or above USD\n500.00.",
+          "order": 3
+        },
+        {
+          "id": "AP_Procurement_Policy_2024-214b31acec",
+          "heading": "4. Vendor tier snapshot (knowledge)",
+          "text": "Tier-1: Dell Inc, SKF USA Inc, Fastenal Company, Mitsubishi Electric US, Siemens Industry Inc.\nTier-2: Bosch Rexroth Corp, Grainger Inc. Tier-3: Acme Tooling LLC (custom tooling \u2014 no auto-approve on unreceived\ninvoices).",
+          "order": 4
+        },
+        {
+          "id": "AP_Procurement_Policy_2024-f8d4f9accf",
+          "heading": "5. Output",
+          "text": "Produce a multi-tab Excel workbook: Summary, Matched, Exceptions. Slack or email dispatch is outside this operating\nprocedure for the current control environment.",
+          "order": 5
+        }
+      ],
+      "facts": [
+        {
+          "id": "fact_1",
+          "kind": "entity",
+          "value": "Helios Industrial",
+          "chunk_id": "AP_Procurement_Policy_2024-a6db62aa27"
+        },
+        {
+          "id": "fact_2",
+          "kind": "threshold",
+          "value": "2%",
+          "chunk_id": "AP_Procurement_Policy_2024-c5713792ba"
+        },
+        {
+          "id": "fact_3",
+          "kind": "threshold",
+          "value": "USD 50.00",
+          "chunk_id": "AP_Procurement_Policy_2024-c5713792ba"
+        },
+        {
+          "id": "fact_4",
+          "kind": "formula",
+          "value": "MIN(0.02 * po_line_amount, 50.00)",
+          "chunk_id": "AP_Procurement_Policy_2024-c5713792ba"
+        },
+        {
+          "id": "fact_5",
+          "kind": "threshold",
+          "value": "USD 500.00",
+          "chunk_id": "AP_Procurement_Policy_2024-857f358270"
+        },
+        {
+          "id": "fact_6",
+          "kind": "constraint",
+          "value": "Multi-currency conversion is not authorized in this revision",
+          "chunk_id": "AP_Procurement_Policy_2024-710a5adad8"
+        },
+        {
+          "id": "fact_7",
+          "kind": "expected_outcome",
+          "value": "Produce a multi-tab Excel workbook: Summary, Matched, Exceptions",
+          "chunk_id": "AP_Procurement_Policy_2024-f8d4f9accf"
+        }
+      ]
+    }
+  ]
+}
